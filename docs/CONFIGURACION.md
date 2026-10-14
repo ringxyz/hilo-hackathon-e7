@@ -17,9 +17,9 @@ El propietario guardó el ID y secreto del proveedor Google. Verificación direc
 
 Proyecto hilo-511611 (894008880971), marca Hilo y contacto waikastudios@gmail.com. OAuth externo en Testing y cliente «Hilo · Web y Supabase» creados.
 
-Callback exacto: https://wpvuhkhmmrgfciphrxbp.supabase.co/auth/v1/callback. El antiguo /api/google/callback de 0.1 ya no se usa. ID y secreto guardados en .dev.vars y como secretos de Sites (requieren nuevo despliegue).
+Callback exacto: https://wpvuhkhmmrgfciphrxbp.supabase.co/auth/v1/callback. El antiguo /api/google/callback de 0.1 ya no se usa. ID y secreto guardados en .dev.vars y como secretos de Sites, activos en la revisión de entorno 2 publicada.
 
-Calendar API habilitada y verificada en Google Cloud. El propietario añadió cinco usuarios de prueba y aportó captura de la lista guardada. Pendiente: ensayo real de entrada/retorno y Calendar. Calendar se solicita por separado desde Ajustes con calendar.calendarlist.readonly, calendar.events.readonly y calendar.app.created.
+Calendar API habilitada y verificada en Google Cloud. El propietario añadió cinco usuarios de prueba y aportó captura de la lista guardada. Entrada/retorno real, selección de calendario, importación y envío de una actividad sintética comprobados en producción. Calendar se solicita por separado desde Ajustes con calendar.calendarlist.readonly, calendar.events.readonly y calendar.app.created. Estos tres ámbitos y los tres básicos de identidad están declarados en Google Auth Platform. Una autorización caducada se reinicia desde Ajustes.
 
 Sincronización manual; lectura del calendario elegido y envío explícito a un calendario secundario Hilo. Las citas importadas son de solo lectura. El envío usa ID local y ETag. Desconectar conserva los eventos remotos, elimina copias importadas y revoca acceso. Borrado remoto y excepciones complejas de series no implementados.
 
@@ -33,7 +33,7 @@ No hay transcripción de audio con Anthropic. SpeechRecognition convierte voz en
 
 ## Avisos
 
-hilo-push desplegada con autenticación propia: secreto de Cron en Vault o JWT Supabase verificado para probar avisos del usuario. VAPID está en Vault. Cron hilo-reminders activo cada minuto; respuesta HTTP 200 verificada con cola vacía. Respeta horario, zona horaria, revisiones y completado; deduplica por actividad/fecha. No incluye títulos en la pantalla bloqueada.
+hilo-push desplegada con autenticación propia: secreto de Cron en Vault o JWT Supabase verificado para probar avisos del usuario. VAPID está en Vault. Cron hilo-reminders activo cada minuto; respuesta HTTP 200 verificada con cola vacía. Un dispositivo Chrome registrado y dos avisos aceptados por el servicio. Recepción visual pendiente de confirmación. Respeta horario, zona horaria, revisiones y completado; deduplica por actividad/fecha. No incluye títulos en la pantalla bloqueada.
 
 Para cada móvil: entrar, activar avisos en Ajustes, enviar prueba y programar una actividad con Recordármelo. Comprobar con app cerrada y pantalla bloqueada. Una aceptación del proveedor no demuestra recepción. iPhone requiere la PWA instalada en la pantalla de inicio. [WebKit](https://webkit.org/blog/13878/web-push-for-web-apps-on-ios-and-ipados/).
 

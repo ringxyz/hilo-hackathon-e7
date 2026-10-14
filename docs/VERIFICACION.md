@@ -6,15 +6,21 @@ Supabase real: tres migraciones aplicadas. Tests SQL con datos ficticios y rollb
 
 Anthropic real: relato ficticio de fracciones, un tema identificado, siete fichas y cuatro fuentes de búsqueda. No se enviaron datos reales de un menor. La prueba no acredita todas las materias ni ausencia de errores educativos.
 
-Recordatorios: Edge Function hilo-push v2 activa; cron cada minuto devuelve HTTP 200 con cola vacía. Esto comprueba la ejecución del motor, no la entrega a un teléfono.
+Recordatorios: Edge Function hilo-push v2 activa; cron cada minuto devuelve HTTP 200 con cola vacía. Un dispositivo Chrome registrado en Supabase tras conceder permiso. Dos envíos de prueba aceptados por el servicio, con confirmación visible en Ajustes. La recepción visual no ha sido confirmada por el propietario; no se ha probado aún en móvil con app cerrada.
 
-Google Cloud: Calendar API aparece como «API habilitada». OAuth externo en modo de prueba y cliente web creados. Esto todavía no comprueba una conexión de calendario desde Hilo.
+Google Cloud: Calendar API habilitada. OAuth externo en modo de prueba, cliente web y seis ámbitos declarados guardados. Inicio de sesión real, retorno y onboarding comprobados en producción. Tras caducar un primer consentimiento, se repitió el flujo y Calendar quedó conectado con los tres permisos autorizados. Lista de calendarios y sincronización real comprobadas; dos eventos importados. Actividad sintética «Prueba Hilo · Repasar fracciones», 15/10/2026 17:00 Europe/Madrid, enviada al calendario propio Hilo; ID, ETag y estado synced persistidos. No se crearon invitaciones.
 
 Interfaz 0.2: revisión local aislada con adaptador simulado, fuera del build. Onboarding adolescente 13 años/2.º ESO; IA bloqueada hasta autorización del adulto; confirmar temas, mostrar respuestas y fuentes, marcar conocido y agrupar para examen. Cambio a adulto y ejemplos de trabajo comprobados. Vistas de Repaso/fichas revisadas a 390×844 y 360×800, sin desbordamiento horizontal. El simulador no comprueba autenticación ni persistencia real.
 
 Proveedor Google habilitado: comprobado mediante /auth/v1/settings, HTTP 200 y external.google=true. Cinco usuarios de prueba añadidos por el propietario, con captura de la lista guardada.
 
-Pendientes: entrada OAuth real, Calendar real, persistencia desde la UI autenticada, voz con micrófono y notificaciones con app cerrada en Android/iPhone. Versión 0.2 preparada para publicar en este punto. Mantener estas diferencias en la presentación del hackatón.
+Versión 0.2 publicada en https://hilo-tu-siguiente-paso.waikastudios.chatgpt.site. Recorrido autenticado real: perfil adulto, relato ficticio de fracciones, confirmación de temas, siete fichas con fuentes, una marcada como conocida y agrupación para examen. Todo permaneció tras recargar; conteos SQL confirmados. Se revisó visualmente la primera respuesta, no la exactitud de todas las fichas. El organizador Anthropic también propuso correctamente mañana, 17:00, 10 minutos y el primer paso, revisados antes de guardar la actividad.
+
+Correcciones finales: aviso explícito mientras el navegador solicita permiso, errores de OAuth caducado/cancelado con retorno a Ajustes, conservación del día seleccionado al refrescar sesión y actualización del estado de permisos al volver a la pestaña. TypeScript y build correctos.
+
+Pendientes físicos: dictado con micrófono y avisos con app cerrada/pantalla bloqueada en Android/iPhone. Pendientes de integración prolongada: renovación OAuth tras caducidad, restricciones Family Link/Workspace y conflictos externos de Calendar. Mantener estas diferencias en la presentación del hackatón.
+
+Evidencias locales en outputs/: hilo-v02-google-onboarding.png, hilo-v02-repaso-guardado.png, hilo-v02-ficha-real.png, hilo-v02-calendar-conectado.png, hilo-v02-actividad-google.png, hilo-v02-aviso-aceptado.png y hilo-v02-publicacion.json. No contienen claves.
 
 ## Evidencia histórica de Hilo 0.1
 

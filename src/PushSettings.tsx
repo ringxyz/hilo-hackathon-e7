@@ -7,12 +7,14 @@ function applicationKey(value:string){const raw=atob(value.replace(/-/g,'+').rep
 export function PushSettings({state,refresh}:{state:AppState;refresh:()=>void}){
   const [enabled,setEnabled]=useState(false),[busy,setBusy]=useState(false),[message,setMessage]=useState('');
   const supported='serviceWorker' in navigator&&'PushManager' in window&&'Notification' in window;
-  useEffect(()=>{if(supported)navigator.serviceWorker.getRegistration().then(r=>r?.pushManager.getSubscription()).then(s=>setEnabled(!!s)).catch(()=>{});},[supported]);
+  useEffect(()=>{let disposed=false;const check=()=>{if(supported)navigator.serviceWorker.getRegistration().then(r=>r?.pushManager.getSubscription()).then(s=>{if(!disposed)setEnabled(!!s&&Notification.permission==='granted');}).catch(()=>{});};check();window.addEventListener('focus',check);return()=>{disposed=true;window.removeEventListener('focus',check);};},[supported]);
   async function toggle(){setBusy(true);setMessage('');try{
     if(!supported)throw new Error('Este navegador no admite avisos web. En iPhone, abre Hilo desde la pantalla de inicio.');
     if(enabled){const registration=await navigator.serviceWorker.getRegistration(),sub=await registration?.pushManager.getSubscription();if(sub){await api('/api/push/unsubscribe',{endpoint:sub.endpoint});await sub.unsubscribe();}setEnabled(false);setMessage('Avisos desactivados en este dispositivo.');return;}
     // Permission is requested only in response to this explicit user action.
+    setMessage('Comprueba la solicitud de notificaciones del navegador y permite los avisos para continuar.');
     const permission=await Notification.requestPermission();if(permission!=='granted')throw new Error('Los avisos no tienen permiso. Puedes cambiarlo en los ajustes del navegador.');
+    setMessage('Conectando este dispositivo con tus recordatorios…');
     if(!state.vapidPublicKey)throw new Error('El envío de avisos aún no está configurado.');
     await navigator.serviceWorker.register('/sw.js');const registration=await navigator.serviceWorker.ready;
     const sub=await registration.pushManager.getSubscription()||await registration.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:applicationKey(state.vapidPublicKey)});
