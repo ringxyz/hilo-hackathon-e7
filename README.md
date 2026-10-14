@@ -9,6 +9,7 @@ React 19 + Vite 8 + TypeScript + Tailwind 4. API en Cloudflare Worker y PostgreS
 ## Recorridos
 
 - Entrada con Google mediante Supabase. Onboarding de dos pasos: adulto, adolescente o niño acompañado; ejemplos adaptados e IA opcional.
+- Entrada por correo y contraseña para cuentas de evaluación previamente creadas. La muestra del jurado se describe en docs/DEMO-JURADO.md.
 - Cuéntamelo: escritura o dictado del navegador, texto editable, propuestas de actividades y revisión antes de guardar.
 - Ahora y Después: tarea activa, siguiente paso, pausa con nota, captura de una idea y retorno.
 - Agenda: citas, tareas, repeticiones sencillas y recordatorios con horario de silencio.

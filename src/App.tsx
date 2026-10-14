@@ -10,6 +10,7 @@ import { authClient, signIn, signOut } from "./auth";
 import { Onboarding, ProfileFields, ConsentFields } from "./Onboarding";
 const Study=lazy(()=>import("./Study").then(m=>({default:m.Study})));
 import { PushSettings } from "./PushSettings";
+import { EmailLogin } from './EmailLogin';
 import { addDays, elapsedSeconds, isDone, localDate, occursOn } from "./domain";
 
 type View="ahora"|"agenda"|"despues"|"repaso"|"ajustes";
@@ -58,7 +59,7 @@ export default function App(){
   async function loginGoogle(){setBusy(true);setError('');try{await signIn();}catch(e){setError((e as Error).message);setBusy(false);}}
   const adult=state?.settings.profile.audience==='adult';
   if(state&&!state.settings.profile.completed)return <Onboarding settings={state.settings} busy={busy} error={error} onSave={(name,profile)=>mutate('/api/onboarding',{name,profile},tr("Tu espacio está listo."))}/>;
-  if(login)return <main className="welcome"><LanguageSelector/><img src="/logo.svg" alt="Hilo" className="welcome-logo"/><Buddy className="welcome-buddy"/><h1>{tr("Vuelve a lo")}<br/>{tr("que importa.")}</h1><p>{tr("Guarda una idea. Haz una cosa.")}<br/>{tr("Recupera tu siguiente paso.")}</p><button className="button primary" disabled={busy} onClick={loginGoogle}>{busy?tr("Abriendo Google…"):tr("Continuar con Google")}<ArrowRight size={20}/></button>{error&&<p className="inline-error" role="alert">{error}</p>}<span className="welcome-note">{tr("Un espacio personal para organizarte y repasar.")}<br/>{tr("Menores: configuración junto a su madre, padre o tutor.")}</span><InstallApp/><LegalLinks/><StorageNotice/></main>;
+  if(login)return <main className="welcome"><LanguageSelector/><img src="/logo.svg" alt="Hilo" className="welcome-logo"/><Buddy className="welcome-buddy"/><h1>{tr("Vuelve a lo")}<br/>{tr("que importa.")}</h1><p>{tr("Guarda una idea. Haz una cosa.")}<br/>{tr("Recupera tu siguiente paso.")}</p><button className="button primary" disabled={busy} onClick={loginGoogle}>{busy?tr("Abriendo Google…"):tr("Continuar con Google")}<ArrowRight size={20}/></button>{error&&<p className="inline-error" role="alert">{error}</p>}<EmailLogin/><span className="welcome-note">{tr("Un espacio personal para organizarte y repasar.")}<br/>{tr("Menores: configuración junto a su madre, padre o tutor.")}</span><InstallApp/><LegalLinks/><StorageNotice/></main>;
 
   return <div className={`app-shell audience-${state?.settings.profile.audience||"adult"}`}>
     <a className="skip-link" href="#main-content">{tr("Ir al contenido")}</a>
