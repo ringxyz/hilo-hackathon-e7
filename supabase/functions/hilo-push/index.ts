@@ -12,7 +12,7 @@ async function send(owner:string,tag:string,test=false){
   let sent=0,retry=false;
   await Promise.all(subscriptions.map(async row=>{
     if(!endpointAllowed(row.subscription?.endpoint||'')){result(await db.from('hilo_push_subscriptions').delete().eq('id',row.id));return;}
-    try{await webpush.sendNotification(row.subscription,JSON.stringify({title:'Hilo',body:test?'Este es tu aviso de prueba. Tu dispositivo está conectado.':'Tienes una actividad programada. Abre Hilo para ver tu siguiente paso.',url:'/?view=agenda',tag}),{TTL:120,urgency:'normal',timeout:7000});sent++;}
+    try{await webpush.sendNotification(row.subscription,JSON.stringify({title:'Hilo',body:row.subscription.language==='en'?(test?'This is your test notification. Your device is connected.':'You have a scheduled activity. Open Hilo for your next step.'):(test?'Este es tu aviso de prueba. Tu dispositivo está conectado.':'Tienes una actividad programada. Abre Hilo para ver tu siguiente paso.'),url:'/?view=agenda',tag}),{TTL:120,urgency:'normal',timeout:7000});sent++;}
     catch(e){const code=(e as {statusCode?:number}).statusCode;if(code===404||code===410)result(await db.from('hilo_push_subscriptions').delete().eq('id',row.id));else retry=true;}
   }));
   return {sent,retry};

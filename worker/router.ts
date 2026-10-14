@@ -5,26 +5,29 @@ import type { Activity, FocusSession, StudyDay } from '../src/types';
 import * as google from './google';
 import * as ai from './ai';
 import { profileSchema as profile } from './profile';
+import { publicResponse } from './public-pages';
 const clock=z.string().regex(/^(?:[01]\d|2[0-3]):[0-5]\d$/);
 const date=z.string().regex(/^\d{4}-\d{2}-\d{2}$/).refine(v=>{const d=new Date(v+'T12:00:00Z');return !isNaN(+d)&&d.toISOString().slice(0,10)===v;},'Elige una fecha válida.');
 export async function handle(request:Request,env:Env):Promise<Response>{
  const path=new URL(request.url).pathname;
- if(!path.startsWith('/api/'))return env.ASSETS.fetch(request);
- if(path==='/api/health')return Response.json({status:'ok',version:'0.2.0',database:'supabase'});
+ if(!path.startsWith('/api/'))return publicResponse(request,env);
+ if(path==='/api/health')return Response.json({status:'ok',version:'0.3.0',database:'supabase'});
  if(path==='/api/config')return Response.json({supabaseUrl:env.SUPABASE_URL||null,supabaseKey:env.SUPABASE_PUBLISHABLE_KEY||null});
  if(request.method!=='GET')sameOrigin(request);
  const repo=await authenticatedRepo(request,env),result=()=>repo.state().then(s=>Response.json(s));
  if(path==='/api/state'&&request.method==='GET')return result();
  if(path==='/api/google/calendars'&&request.method==='GET')return Response.json(await google.calendars(repo));
  if(request.method!=='POST')throw new ApiError('Acción no disponible.',405);
+ if(!request.headers.get('content-type')?.toLowerCase().startsWith('application/json'))throw new ApiError('Envía los datos como JSON.',415);
+ if(!dbResult(await repo.db.rpc('hilo_allow_request',{bucket:['/api/study/topics','/api/study/generate','/api/capture/parse'].includes(path)?'ai':'write'})))throw new ApiError('Demasiadas acciones seguidas. Espera un minuto e inténtalo de nuevo.',429);
  const reader=request.body?.getReader();let raw='';if(reader){const decoder=new TextDecoder();let bytes=0;try{while(true){const {done,value}=await reader.read();if(done)break;bytes+=value.byteLength;if(bytes>64000){await reader.cancel();throw new ApiError('La entrada es demasiado larga.',413);}raw+=decoder.decode(value,{stream:true});}raw+=decoder.decode();}finally{reader.releaseLock();}}
  let b:any;try{b=JSON.parse(raw);}catch{throw new ApiError('Revisa los datos enviados.');}
  if(path==='/api/onboarding'){const input=z.object({name:z.string().trim().max(40),profile}).parse(b);await repo.saveSettings({...await repo.settings(),...input});return result();}
- if(path==='/api/demo'){const s=await repo.state();if(s.activities.length)throw new ApiError('Tu espacio ya tiene actividades.',409);dbResult(await repo.db.rpc('hilo_capture',{request_id:crypto.randomUUID(),items:demoActivities(localDate(new Date(),s.settings.timezone),s.settings.profile.audience)}));await repo.saveSettings({...s.settings,demo:true});return result();}
+ if(path==='/api/demo'){const s=await repo.state();if(s.activities.length)throw new ApiError('Tu espacio ya tiene actividades.',409);dbResult(await repo.db.rpc('hilo_capture',{request_id:crypto.randomUUID(),items:demoActivities(localDate(new Date(),s.settings.timezone),s.settings.profile.audience,repo.language)}));await repo.saveSettings({...s.settings,demo:true});return result();}
  if(path==='/api/capture/parse'){
   const input=z.object({text:z.string().trim().min(1).max(6000),capturedAt:z.number().min(0).max(Date.now()+60000),tomorrow:z.boolean().default(false),useAI:z.boolean().default(false)}).parse(b),s=await repo.settings(),today=localDate(new Date(input.capturedAt),s.timezone);
   if(input.useAI){const drafts=await ai.organize(repo,input.text,today,input.tomorrow);return Response.json({drafts:drafts.map(d=>({...activitySchema.parse(d),ambiguous:typeof d.ambiguous==='string'?d.ambiguous:''}))});}
-  return Response.json({drafts:parseCapture(input.text,today,input.tomorrow)});
+  return Response.json({drafts:parseCapture(input.text,today,input.tomorrow,repo.language)});
  }
  if(path==='/api/capture/save'){const input=z.object({requestId:z.string().uuid(),activities:z.array(activitySchema).min(1).max(12)}).parse(b);dbResult(await repo.db.rpc('hilo_capture',{request_id:input.requestId,items:input.activities.map(a=>({...a,id:a.id||crypto.randomUUID()}))}));return result();}
  if(path==='/api/activity/update'){const a=await repo.activity(z.string().uuid().parse(b.id));if(a.source==='google')throw new ApiError('Esta cita se edita en Google.',403);const data=activitySchema.parse({...a,...b.activity,id:a.id});await repo.saveActivity({...a,...data,sync:a.googleId?'pending':undefined} as Activity,z.number().int().parse(b.revision));return result();}
@@ -59,7 +62,7 @@ export async function handle(request:Request,env:Env):Promise<Response>{
  }
  if(path==='/api/exams/delete'){dbResult(await repo.db.from('hilo_exams').delete().eq('id',z.string().uuid().parse(b.id)).eq('owner',repo.userId));return result();}
  if(path==='/api/push/subscribe'){
-  const subscription=z.object({endpoint:z.string().url().max(2000),expirationTime:z.number().nullable().optional(),keys:z.object({p256dh:z.string().min(20).max(200),auth:z.string().min(10).max(100)})}).parse(b),url=new URL(subscription.endpoint);
+  const subscription=z.object({endpoint:z.string().url().max(2000),language:z.enum(['es','en']).default('es'),expirationTime:z.number().nullable().optional(),keys:z.object({p256dh:z.string().min(20).max(200),auth:z.string().min(10).max(100)})}).parse(b),url=new URL(subscription.endpoint);
   if(url.protocol!=='https:'||url.username||url.password||(url.port&&url.port!=='443')||!['fcm.googleapis.com','updates.push.services.mozilla.com','web.push.apple.com','wns.windows.com'].some(h=>url.hostname===h||url.hostname.endsWith('.'+h)))throw new ApiError('Proveedor de notificaciones no admitido.');
   dbResult(await repo.db.from('hilo_push_subscriptions').upsert({owner:repo.userId,endpoint:subscription.endpoint,subscription},{onConflict:'endpoint'}));return result();
  }

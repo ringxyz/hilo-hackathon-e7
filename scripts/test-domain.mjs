@@ -20,3 +20,8 @@ assert.equal(timeToInstant('2026-10-24','09:00','Europe/Madrid').toISOString(),'
 assert.equal(timeToInstant('2026-10-25','09:00','Europe/Madrid').toISOString(),'2026-10-25T08:00:00.000Z');
 console.log('Domain assertions passed: captures, ambiguity, recurrence, return point and DST.');
 
+const english=parseCapture('Review fractions tomorrow at 5 pm; Read for 20 minutes today','2026-10-14',false,'en');
+assert.equal(english[0].date,'2026-10-15');assert.equal(english[0].time,'17:00');assert.equal(english[0].title,'Review fractions');assert.equal(english[1].duration,20);
+assert.ok(parseCapture('Meeting tomorrow at 9','2026-10-14',false,'en')[0].ambiguous);
+assert.equal(parseCapture('Meeting today at 12 am','2026-10-14',false,'en')[0].time,'00:00');
+assert.ok(parseCapture('Meeting at 25:00','2026-10-14',false,'en')[0].ambiguous);

@@ -1,5 +1,1 @@
-import { handle } from "./router";
-import { errorResponse, type Env } from "./repo";
-export default {async fetch(r:Request,env:Env){let response:Response;try{response=await handle(r,env);}catch(e){response=errorResponse(e);}const headers=new Headers(response.headers);if(new URL(r.url).pathname.startsWith("/api/"))headers.set("Cache-Control","private, no-store");headers.set("X-Content-Type-Options","nosniff");headers.set("Referrer-Policy","strict-origin-when-cross-origin");headers.set("Permissions-Policy","camera=(), geolocation=()");headers.set("Content-Security-Policy","default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://*.supabase.co wss://*.supabase.co ws://127.0.0.1:*; frame-ancestors 'self' https://chatgpt.com https://*.chatgpt.com; base-uri 'self'; form-action 'self' https://accounts.google.com");return new Response(response.body,{status:response.status,statusText:response.statusText,headers});}};
-
-
+export { default } from './secure-entry';

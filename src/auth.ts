@@ -1,12 +1,14 @@
-import { createClient, type SupabaseClient } from '@supabase/supabase-js';
+import { tr } from './i18n';
+import type { SupabaseClient } from '@supabase/supabase-js';
 let client: SupabaseClient | null = null;
 let starting: Promise<SupabaseClient> | null = null;
 export async function authClient() {
   if (client) return client;
   if (!starting) starting = (async () => {
-    const response = await fetch('/api/config');
+    const response = await fetch('/api/config',{signal:AbortSignal.timeout(15000)});
     const config = await response.json() as {supabaseUrl?:string;supabaseKey?:string};
-    if (!response.ok || !config.supabaseUrl || !config.supabaseKey) throw new Error('Estamos preparando el acceso. Vuelve en unos minutos.');
+    if (!response.ok || !config.supabaseUrl || !config.supabaseKey) throw new Error(tr('Estamos preparando el acceso. Vuelve en unos minutos.'));
+    const {createClient}=await import('@supabase/supabase-js');
     client = createClient(config.supabaseUrl, config.supabaseKey, { auth: { flowType: 'pkce', detectSessionInUrl: true, persistSession: true, autoRefreshToken: true } });
     return client;
   })().catch(error => { starting = null; throw error; });

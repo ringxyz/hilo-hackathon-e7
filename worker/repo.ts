@@ -18,9 +18,10 @@ export async function authenticatedRepo(request:Request,env:Env) {
   const db=createClient(env.SUPABASE_URL,env.SUPABASE_PUBLISHABLE_KEY,{global:{headers:{Authorization:authorization}},auth:{persistSession:false,autoRefreshToken:false}});
   const {data,error}=await db.auth.getUser(authorization.slice(7));
   if(error||!data.user)throw new ApiError("Inicia sesión para abrir tu espacio.",401);
-  const repo=new Repo(env,data.user.id,db,data.user,authorization.slice(7));await repo.init();return repo;
+  const repo=new Repo(env,data.user.id,db,data.user,authorization.slice(7));repo.language=request.headers.get('X-Hilo-Language')==='en'?'en':'es';await repo.init();return repo;
 }
 export class Repo {
+  language:"es"|"en"="es";
   constructor(public env:Env,public userId:string,public db:SupabaseClient,public user:User,public token:string){}
   async init(){dbResult(await this.db.from("hilo_profiles").upsert({id:this.userId,settings:defaults},{onConflict:"id",ignoreDuplicates:true}));}
   async settings():Promise<Settings>{const row=dbResult(await this.db.from("hilo_profiles").select("settings").eq("id",this.userId).single());if(!row)throw new ApiError("No se pudo abrir tu perfil.",502);return {...defaults,...row.settings,profile:{...defaults.profile,...row.settings.profile}};}
@@ -37,11 +38,11 @@ export class Repo {
     return {activities:rows.map(r=>({...r.payload,id:r.id,revision:r.revision})),session,settings,google,voiceConfigured:false,aiConfigured:!!this.env.ANTHROPIC_API_KEY,remindersConfigured:!!key,vapidPublicKey:key,authenticated:true,studyDays:days.map(r=>r.payload as StudyDay),exams:exams.map(r=>r.payload as Exam)};
   }
 }
-export function demoActivities(date=localDate(),audience="adult"):Activity[]{const adult=audience==="adult";return [
+export function demoActivities(date=localDate(),audience="adult",language="es"):Activity[]{const adult=audience==="adult";return [
 {title:adult?"Preparar la reunión":"Repasar historia",date,kind:"task",duration:15,nextStep:adult?"Anotar los tres temas que quiero tratar":"Abrir los apuntes del tema 3",color:"pink"},
 {title:adult?"Organizar la semana":"Preparar la mochila",date,kind:"task",duration:10,nextStep:adult?"Elegir una prioridad para mañana":"Poner los libros de mañana sobre la mesa",color:"mint"},
 {title:adult?"Terminar la propuesta":"Terminar el ejercicio de mates",date,kind:"task",duration:25,nextStep:"Abrir el documento y revisar la primera página",color:"peach"},
 {title:"Entrenamiento",date,time:"18:00",kind:"event",duration:60,nextStep:"",color:"blue"},
 {title:"Probar esa receta",date:null,kind:"task",duration:15,nextStep:"Buscar la receta que guardé",color:"mint"},
 {title:"Comprar un cuaderno",date:null,kind:"task",duration:15,nextStep:"",color:"pink"},
-].map(x=>({id:crypto.randomUUID(),time:null,note:"",status:"pending",recurrence:"none",source:"hilo",reminder:false,...x})) as Activity[];}
+].map(x=>{const en:Record<string,string>={"Preparar la reunión":"Prepare the meeting","Repasar historia":"Review history","Anotar los tres temas que quiero tratar":"Write down the three topics to discuss","Abrir los apuntes del tema 3":"Open the notes for topic 3","Organizar la semana":"Organise the week","Preparar la mochila":"Pack my school bag","Elegir una prioridad para mañana":"Choose one priority for tomorrow","Poner los libros de mañana sobre la mesa":"Put tomorrow's books on the table","Terminar la propuesta":"Finish the proposal","Terminar el ejercicio de mates":"Finish the maths exercise","Abrir el documento y revisar la primera página":"Open the document and review the first page","Entrenamiento":"Training","Probar esa receta":"Try that recipe","Buscar la receta que guardé":"Find the recipe I saved","Comprar un cuaderno":"Buy a notebook"};return {id:crypto.randomUUID(),time:null,note:"",status:"pending",recurrence:"none",source:"hilo",reminder:false,...x,...(language==='en'?{title:en[x.title]||x.title,nextStep:en[x.nextStep]||x.nextStep}:{})};}) as Activity[];}

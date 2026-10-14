@@ -1,3 +1,5 @@
+> Registro histórico de la primera entrega. Para el estado actualizado de las integraciones consulta HISTORIAL.md; para la revisión del 14/10/2026, consulta [PILOTO-03.md](PILOTO-03.md). Los pendientes iniciales de Google, Supabase y el motor push que figuran abajo no describen la versión actual.
+
 # Verificación de Hilo 0.2
 
 14 de octubre de 2026. Build de React/Vite/Worker y TypeScript correctos. Pruebas de dominio y perfil correctas. Prueba de límites del Worker: configuración pública sin secretos, autenticación obligatoria, origen cruzado rechazado y respuestas privadas sin caché.

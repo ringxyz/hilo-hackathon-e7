@@ -1,0 +1,21 @@
+import assert from 'node:assert/strict';
+import {build} from 'esbuild';
+import {readFile,mkdir} from 'node:fs/promises';
+import vm from 'node:vm';
+await mkdir('.sites-runtime/tests',{recursive:true});
+await build({entryPoints:['worker/index.ts'],outfile:'.sites-runtime/tests/public-worker.mjs',bundle:true,platform:'node',format:'esm',logLevel:'silent'});
+const {default:worker}=await import('../.sites-runtime/tests/public-worker.mjs');
+const mime={'.html':'text/html','.css':'text/css','.svg':'image/svg+xml','.png':'image/png','.webmanifest':'application/manifest+json','.js':'text/javascript','.woff2':'font/woff2'};
+const env={ASSETS:{fetch:async r=>{const p=new URL(r.url).pathname;try{const body=await readFile(p==='/index.html'?'index.html':'public'+p);return new Response(body,{headers:{'content-type':mime[p.slice(p.lastIndexOf('.'))]||'text/plain'}});}catch{return new Response('',{status:404});}}}};
+const origin='https://hilo-tu-siguiente-paso.waikastudios.chatgpt.site';
+for(const path of ['/','/en','/privacy','/en/privacy','/cookies','/en/cookies','/legal','/en/legal']){const res=await worker.fetch(new Request(origin+path),env);assert.equal(res.status,200,path);const html=await res.text();assert.ok(html.includes('<h1>'),path);assert.ok(html.includes('noindex, nofollow'));assert.ok(html.includes('/share-'+(path.startsWith('/en')?'en':'es')+'.png'));assert.equal(res.headers.get('x-content-type-options'),'nosniff');assert.ok(res.headers.get('content-security-policy').includes("object-src 'none'"));assert.equal((html.match(/<title>/g)||[]).length,1);assert.equal((html.match(/name="description"/g)||[]).length,1);}
+assert.equal((await worker.fetch(new Request(origin+'/missing'),env)).status,404);
+assert.equal((await worker.fetch(new Request(origin+'/missing.png'),env)).status,404);
+assert.equal((await worker.fetch(new Request(origin+'/privacy/'),env)).status,308);
+assert.equal((await worker.fetch(new Request(origin+'/en',{method:'HEAD'}),env)).body,null);
+for(const path of ['/robots.txt','/sitemap.xml','/.well-known/security.txt','/offline.html','/share-es.png','/share-en.png','/manifest.webmanifest','/maskable-512.png'])assert.equal((await worker.fetch(new Request(origin+path),env)).status,200,path);
+const manifest=JSON.parse(await readFile('public/manifest.webmanifest','utf8'));assert.equal(manifest.display,'standalone');assert.ok(manifest.icons.some(i=>i.purpose==='maskable'));
+const handlers={},cacheMatches=[];vm.runInNewContext(await readFile('public/sw.js','utf8'),{self:{location:{origin},addEventListener:(n,f)=>handlers[n]=f},URL,fetch:async()=>{throw Error('offline')},caches:{match:async p=>{cacheMatches.push(p);return 'offline-help'}}});
+let response;handlers.fetch({request:{url:origin+'/api/state',method:'GET'},respondWith:p=>{response=p}});assert.equal(response,undefined,'Private API must not use SW caches');
+handlers.fetch({request:{url:origin+'/?view=agenda',method:'GET',mode:'navigate'},respondWith:p=>{response=p}});assert.equal(await response,'offline-help');assert.deepEqual(cacheMatches,['/offline.html']);
+console.log('Pilot checks passed: bilingual server HTML, privacy/noindex, metadata, 404, assets, headers, manifest and offline isolation.');
