@@ -1,42 +1,46 @@
-# Configuración pendiente de Hilo
+# Configuración de Hilo 0.2
 
-14 de octubre de 2026. Primera versión privada con datos ficticios.
+Estado comprobado el 14 de octubre de 2026.
 
-## Google Calendar
+## Supabase
 
-El usuario confirmó que todavía no dispone de proyecto OAuth. El código de autorización, cifrado de tokens, selección de calendario, lectura paginada y envío explícito de eventos está preparado, pero no se ha probado contra una cuenta real.
+Bigring, plan Free. Proyecto Hilo wpvuhkhmmrgfciphrxbp, activo, Frankfurt. URL https://wpvuhkhmmrgfciphrxbp.supabase.co. Tres migraciones aplicadas: hilo_core, hilo_reminders, hilo_hardening. Datos por usuario con RLS; colas y cuotas cerradas al cliente.
 
-1. Crear un proyecto de Google Cloud y activar Google Calendar API.
-2. Configurar la pantalla de consentimiento y una cuenta de prueba con datos sintéticos. No usar calendarios familiares ni escolares reales para esta demostración.
-3. Crear un cliente OAuth de aplicación web. URI de redirección exacta: `https://hilo-tu-siguiente-paso.waikastudios.chatgpt.site/api/google/callback`.
-4. Configurar como secretos de servidor `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` y `TOKEN_ENCRYPTION_KEY`. Esta última es una clave aleatoria de 32 bytes, codificada en base64. No enviarla por chat ni guardarla en el repositorio.
-5. Configurar `SITE_URL` con el origen de publicación. Desplegar la nueva revisión de entorno.
-6. En Hilo → Ajustes → Conectar Google, conceder permisos y elegir un calendario de lectura.
-7. Probar con una cita sintética: lectura, creación en el calendario Hilo, cambio con ETag, autorización revocada y reconexión. El envío a Google es explícito desde la actividad. La sincronización es manual en esta versión.
+Site URL guardada: https://hilo-tu-siguiente-paso.waikastudios.chatgpt.site
+Retornos guardados:
+- https://hilo-tu-siguiente-paso.waikastudios.chatgpt.site/
+- https://hilo-tu-siguiente-paso.waikastudios.chatgpt.site/?view=ajustes&calendar=1
 
-Permisos preparados: `calendar.calendarlist.readonly`, `calendar.events.readonly`, `calendar.app.created`. El último permite crear y gestionar calendarios secundarios creados por la app. Fuente: [permisos oficiales de Calendar](https://developers.google.com/workspace/calendar/api/auth).
+El propietario guardó el ID y secreto del proveedor Google. Verificación directa de /auth/v1/settings: HTTP 200, external.google=true. Mantener apagados Skip nonce checks y Allow users without an email. Sin accesos anónimos ni vinculación manual.
 
-Pendiente antes de declarar RF-009 completo: pruebas OAuth reales, renovación durante la evaluación, reconciliación ante concurrencia, sincronización automática, edición/cancelación completa de series y excepciones, borrado remoto y cuentas restringidas. Una configuración en modo Testing puede tener limitaciones temporales; verificar la configuración efectiva antes de la evaluación.
+## Google
 
-## Voz
+Proyecto hilo-511611 (894008880971), marca Hilo y contacto waikastudios@gmail.com. OAuth externo en Testing y cliente «Hilo · Web y Supabase» creados.
 
-La captura permite texto sin ninguna clave. Cuando el navegador lo ofrece, hay dictado con SpeechRecognition, con aviso visible de que puede utilizar el servicio del navegador. Su disponibilidad depende del navegador: [documentación de SpeechRecognition](https://developer.mozilla.org/en-US/docs/Web/API/SpeechRecognition).
+Callback exacto: https://wpvuhkhmmrgfciphrxbp.supabase.co/auth/v1/callback. El antiguo /api/google/callback de 0.1 ya no se usa. ID y secreto guardados en .dev.vars y como secretos de Sites (requieren nuevo despliegue).
 
-La ruta `/api/voice` acepta grabaciones breves y dispone de un adaptador para la API de transcripción. Para activarlo, configurar `VOICE_API_KEY` como secreto de servidor y redeplegar. No hay una clave incluida ni llamadas al proveedor ejecutadas en las pruebas. El audio no se guarda en la base de datos de Hilo.
+Calendar API habilitada y verificada en Google Cloud. El propietario añadió cinco usuarios de prueba y aportó captura de la lista guardada. Pendiente: ensayo real de entrada/retorno y Calendar. Calendar se solicita por separado desde Ajustes con calendar.calendarlist.readonly, calendar.events.readonly y calendar.app.created.
 
-Antes de usar voz con datos personales, comprobar las condiciones y retención del proveedor, y probar permiso denegado, cancelación, silencio y formatos en Android e iPhone reales. El cliente corta la grabación a 90 segundos; el servidor limita el tamaño a 12 MB. Falta validar la duración del audio en servidor y limitar abuso por cuenta.
+Sincronización manual; lectura del calendario elegido y envío explícito a un calendario secundario Hilo. Las citas importadas son de solo lectura. El envío usa ID local y ETag. Desconectar conserva los eventos remotos, elimina copias importadas y revoca acceso. Borrado remoto y excepciones complejas de series no implementados.
 
-## Avisos con la app cerrada
+En Testing, los permisos adicionales pueden producir tokens de renovación de siete días. Probar reconexión y restricciones de Family Link/Workspace con cuentas reales. [OAuth oficial](https://developers.google.com/identity/protocols/oauth2).
 
-**El envío de avisos aún no está implementado.** La aplicación no presenta permisos ni confirmaciones de notificaciones activas. Solo están el manifiesto PWA y los manejadores de recepción/apertura del service worker.
+## Anthropic y voz
 
-Se necesita completar una cola duradera, registros de suscripción por usuario/dispositivo, claves VAPID, un proceso programado de envío, invalidación por revisión, posposición y prueba observada con pantalla bloqueada. No sustituir este proceso por un temporizador en la página.
+ANTHROPIC_API_KEY configurada; modelo claude-sonnet-5-5 disponible en la cuenta. Prueba real con contenido ficticio: siete fichas de fracciones y cuatro fuentes. Se guardan temas y fichas, no el relato original. Cuota de 30 usos de IA por usuario/día; una generación puede incluir varias llamadas y búsquedas facturadas.
 
-En iPhone, Web Push requiere una web app añadida a la pantalla de inicio en versiones compatibles. Fuente: [WebKit: Web Push para iOS y iPadOS](https://webkit.org/blog/13878/web-push-for-web-apps-on-ios-and-ipados/). Instalar Hilo no significa que los avisos estén activos.
+No hay transcripción de audio con Anthropic. SpeechRecognition convierte voz en texto cuando el navegador lo permite y puede utilizar su servicio. Dictado máximo de 90 segundos; texto revisable. Pruebas físicas de Android/iPhone, permiso denegado, silencio y cancelación pendientes.
 
-## Acceso y menores
+## Avisos
 
-El despliegue inicial es privado para su propietario y usa la identidad de Sites. La cuenta local de evaluación es sintética. No se han habilitado registros públicos ni flujos para datos reales de menores. PEN-008 sigue pendiente. No hay recopilación de diagnóstico, centro educativo o fecha de nacimiento.
+hilo-push desplegada con autenticación propia: secreto de Cron en Vault o JWT Supabase verificado para probar avisos del usuario. VAPID está en Vault. Cron hilo-reminders activo cada minuto; respuesta HTTP 200 verificada con cola vacía. Respeta horario, zona horaria, revisiones y completado; deduplica por actividad/fecha. No incluye títulos en la pantalla bloqueada.
 
-Referencia del adaptador de voz: [Create transcription](https://developers.openai.com/api/reference/resources/audio/subresources/transcriptions/methods/create). El adaptador prepara multipart/form-data con audio y modelo gpt-4o-mini-transcribe; no está activado.
+Para cada móvil: entrar, activar avisos en Ajustes, enviar prueba y programar una actividad con Recordármelo. Comprobar con app cerrada y pantalla bloqueada. Una aceptación del proveedor no demuestra recepción. iPhone requiere la PWA instalada en la pantalla de inicio. [WebKit](https://webkit.org/blog/13878/web-push-for-web-apps-on-ios-and-ipados/).
 
+## Piloto familiar y seguridad
+
+Perfiles 6–12 y 13–17 requieren acompañamiento y autorización declarada del tutor. IA desactivada inicialmente. No se pide diagnóstico, colegio o fecha de nacimiento. La casilla no verifica identidad/tutela ni acredita cumplimiento legal; no se ha validado un lanzamiento general para menores.
+
+Asesor Supabase: corregida la ejecución pública del activador de RLS. Persiste el aviso de pg_net registrado en public; sus objetos de red están en net y no admite traslado directo. No se reinstaló la extensión ni se borraron sus colas. [Aviso](https://supabase.com/docs/guides/database/database-linter?lint=0014_extension_in_public).
+
+hilo_take_ai_credit es SECURITY DEFINER invocable intencionadamente por usuarios autenticados: limita su propia cuota con auth.uid(), sin aceptar otro usuario. Límite 30 comprobado. Tablas de cola/cuotas sin políticas: cierre intencional al cliente. [Detalle del asesor](https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable).

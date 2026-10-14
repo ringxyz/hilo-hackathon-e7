@@ -11,3 +11,7 @@
 7. Pruebas: lógica de fechas, ambigüedad, recurrencia y cambio horario; API con cuentas sintéticas aisladas; pruebas visibles en navegador. Se corrigieron la extracción de horarios de mañana, la fuente, el foco de diálogos, el scroll de navegación y la conservación de notas al cambiar de tarea.
 
 Este registro describe acciones realmente efectuadas en esta conversación. No reconstruye conversaciones anteriores ni sustituye los documentos y el vídeo requeridos por el concurso.
+
+## Ampliación 0.2, 14 de octubre de 2026
+
+El usuario pidió configurar servicios, usar Anthropic y Supabase, añadir entrada Google, adaptar el lenguaje por edad y convertir relatos de clase en fichas por día/repaso de examen. Confirmó 13 años y 2.º ESO en España. Se implementaron esos recorridos y el motor push, se creó Hilo en Bigring Free y se aplicaron tres migraciones. Pruebas SQL con rollback, IA real con contenido ficticio y revisión visual local aislada. Google OAuth y su cliente web creados con autorización; vinculación final y prueba real aún pendientes. Ver CONFIGURACION y VERIFICACION para el estado vigente.

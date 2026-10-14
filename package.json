@@ -1,6 +1,6 @@
 {
   "name": "hilo",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "engines": {
     "node": ">=22.13.0"
@@ -10,29 +10,30 @@
     "dev:api": "node --import ./scripts/sites-env.mjs node_modules/wrangler/bin/wrangler.js dev --config wrangler.json --local --persist-to .wrangler/state --ip 127.0.0.1 --port 8787 --inspector-port 0",
     "build": "node scripts/build-hilo.mjs",
     "typecheck": "tsc --noEmit",
-    "test": "node scripts/test-domain.mjs",
+    "test": "node scripts/test-domain.mjs && node scripts/test-profile.mjs && node scripts/test-worker-boundary.mjs",
     "db:generate": "drizzle-kit generate"
   },
   "dependencies": {
+    "@supabase/supabase-js": "2.117.3",
+    "drizzle-orm": "0.45.2",
+    "lucide-react": "^1.31.0",
     "react": "19.2.6",
     "react-dom": "19.2.6",
-    "lucide-react": "^1.31.0",
-    "drizzle-orm": "0.45.2",
     "zod": "^3.25.76"
   },
   "devDependencies": {
+    "@cloudflare/workers-types": "4.20260515.1",
+    "@tailwindcss/postcss": "4.2.1",
     "@types/node": "22.19.19",
     "@types/react": "19.2.14",
     "@types/react-dom": "19.2.3",
     "@vitejs/plugin-react": "6.0.2",
-    "@cloudflare/workers-types": "4.20260515.1",
-    "@tailwindcss/postcss": "4.2.1",
+    "drizzle-kit": "0.31.10",
+    "esbuild": "^0.28.0",
     "tailwindcss": "4.2.1",
     "typescript": "5.9.3",
     "vite": "8.0.13",
-    "wrangler": "4.92.0",
-    "drizzle-kit": "0.31.10",
-    "esbuild": "^0.28.0"
+    "wrangler": "4.92.0"
   },
   "type": "module",
   "overrides": {

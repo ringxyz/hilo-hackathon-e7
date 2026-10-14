@@ -4,22 +4,22 @@
 product
 
 ## Users
-Adolescentes y adultos que quieren organizar estudios, trabajo, hogar y vida personal. La primera versión privada usa escenarios ficticios y no solicita diagnóstico ni edad.
+Adultos, adolescentes y niños acompañados. El piloto familiar se adapta a 13 años, 2.º ESO, España. Cada persona configura su perfil; no se precargan datos del hijo en producción.
 
 ## Product Purpose
-Guardar un pendiente, centrarse en un siguiente paso y recuperar el contexto después de una interrupción. Tres recorridos: Cuéntamelo, Ahora, Agenda; Después conserva ideas sin horario.
+Capturar pendientes, hacer una cosa y recuperar el contexto. Repaso transforma temas confirmados en fichas por día y permite agruparlas para examen.
 
 ## Brand Personality
-Cercana, tranquila, optimista. Identidad redondeada inspirada en los logos adjuntos. La referencia Habitz aporta superficies blancas, lavanda, rosa, melocotón y menta, y pequeños personajes geométricos.
+Cercana y tranquila. Logo redondeado propio, paleta lavanda/rosa/menta/melocotón. Adultos: ejemplos de trabajo/hogar y menos personajes. Adolescentes: estudios y vida diaria sin lenguaje infantil.
 
 ## Anti-references
-Paneles cargados de estadísticas, rachas, recompensas obligatorias, culpa y vigilancia. La referencia visual actual del usuario prevalece sobre la paleta verde propuesta por el PRD.
+Estadísticas cargadas, rachas, presión, recompensas obligatorias, culpa y vigilancia.
 
 ## Design Principles
-Una sola actividad protagonista. Guardar una idea conserva el punto actual. Las citas y las tareas se distinguen por palabras. El guardado y las conexiones muestran su estado real.
+Una actividad protagonista. Guardar una idea conserva el punto actual. Revisar antes de guardar. Fuentes visibles, respuestas editables, sin asumir que la IA reproduce lo explicado en clase.
 
 ## Accessibility & Inclusion
-Español, foco visible, objetivos de 48 px, etiquetas explícitas, movimiento reducido, diseño desde 360 px. No usar color como única señal.
+Español, foco visible, controles etiquetados, movimiento reducido, diseño desde 360 px y color acompañado de texto. IA optativa; tutor para menores.
 
 ## Sources and scope
-PRD-HILO revisión 1.2, investigación y prompt adjuntos leídos como fuentes funcionales. Construir primera versión autorizado en este chat; no incluye envío al concurso ni contratación. Google y transcripción quedan pendientes de credenciales; Android/iPhone reales pendientes de prueba.
+PRD e investigación adjuntos como fuentes, ampliados por las decisiones del usuario: React/Vite, Supabase, Anthropic, acceso Google, onboarding y fichas. No incluye envío al concurso. Pruebas físicas de voz y avisos pendientes.

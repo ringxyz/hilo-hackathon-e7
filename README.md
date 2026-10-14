@@ -1,68 +1,36 @@
 # Hilo · A tu ritmo
 
-Primera versión privada de una app para capturar pendientes, hacer una cosa cada vez y recuperar el punto de retorno después de una interrupción.
+App para guardar pendientes, recuperar el siguiente paso y repasar lo aprendido. Versión 0.2 en preparación para un piloto familiar y el hackatón.
 
 ## Stack
 
-React 19 + Vite 8 + TypeScript + Tailwind 4. API en un Cloudflare Worker, base de datos D1/SQLite y Drizzle. La autenticación del despliegue privado la proporciona Sites. El frontend es una SPA de React, sin Next.js ni Vinext.
+React 19 + Vite 8 + TypeScript + Tailwind 4. API en Cloudflare Worker y PostgreSQL/Auth en Supabase. Anthropic organiza texto e investiga fichas; Supabase Edge Functions, Cron y Vault gestionan recordatorios.
 
-## Qué puedes probar
+## Recorridos
 
-- Cuéntamelo: texto, interpretación determinista, edición y confirmación de varios pendientes.
-- Ahora: tarea activa, siguiente paso, pausa con nota, retorno, temporizador opcional y completar/deshacer.
-- Después: capturar una idea sin cambiar la tarea actual y pasarla a Hoy.
-- Agenda: fechas, citas fijas, tareas flexibles y repeticiones diarias, semanales o anuales sencillas.
-- Ajustes: nombre opcional, zona horaria, ocultar reloj, preferencias de silencio, exportar y borrar datos propios.
-- Logo SVG original, iconos instalables, diseño responsive y ejemplos ficticios voluntarios.
+- Entrada con Google mediante Supabase. Onboarding de dos pasos: adulto, adolescente o niño acompañado; ejemplos adaptados e IA opcional.
+- Cuéntamelo: escritura o dictado del navegador, texto editable, propuestas de actividades y revisión antes de guardar.
+- Ahora y Después: tarea activa, siguiente paso, pausa con nota, captura de una idea y retorno.
+- Agenda: citas, tareas, repeticiones sencillas y recordatorios con horario de silencio.
+- Repaso: relato de clase, confirmación de temas, búsqueda de fuentes, fichas por día y agrupación para examen. Respuestas editables y estado de práctica.
+- Ajustes: perfil, consentimiento, zona horaria, reloj, Google Calendar, avisos por dispositivo, exportación y borrado de datos propios.
 
-Las actividades se guardan en servidor. La app requiere conexión para confirmar cambios. No hay guardado offline simulado.
+Se necesita conexión para guardar. Hilo no almacena audio. SpeechRecognition o el teclado convierten la voz en texto; Anthropic recibe texto. La entrega de notificaciones requiere prueba en cada dispositivo.
 
-## Ejecutar en Windows
+## Desarrollo y pruebas
 
-Requiere Node.js 22.13 o posterior.
+Requiere Node.js 22.13+. Configurar .dev.vars con los nombres de .env.example. Aplicar las migraciones de supabase/migrations/ y preparar OAuth según docs/CONFIGURACION.md.
 
-```powershell
-npm ci
-npm run build
-node --import ./scripts/sites-env.mjs node_modules/wrangler/bin/wrangler.js d1 migrations apply DB --local --config wrangler.json --persist-to .wrangler/state
-```
+Comandos: npm ci; npm run build. En dos terminales, npm run dev:api y npm run dev. Abrir http://127.0.0.1:5173.
 
-En dos terminales:
+La versión 0.2 requiere una sesión Supabase real. Para OAuth local debe autorizarse expresamente ese retorno en Supabase; no se añadieron comodines ni localhost en producción. Después de editar worker/, repetir el build. React tiene HMR.
 
-```powershell
-npm run dev:api
-npm run dev
-```
+Validación: npm run typecheck, npm test, npm run build. supabase/tests.sql comprueba RLS, idempotencia, revisiones, cuota de IA y avisos en una transacción revertida. scripts/test-api.mjs es la prueba histórica de D1 0.1; no valida Supabase 0.2.
 
-Abrir http://127.0.0.1:5173. Si aparece la entrada, pulsar «Abrir mi espacio» para entrar en la cuenta sintética local. El simulador local de identidad solo se usa en loopback y no entra en el build de producción.
+## Datos y límites
 
-Después de cambiar código de `worker/`, ejecutar `npm run build`; Wrangler recarga el artefacto. Los cambios de React usan HMR.
+RLS aísla los datos por propietario. Anthropic y Google usan secretos de servidor; los tokens de Calendar se cifran. La clave publicable de Supabase no es un secreto.
 
-Si el shim npm del equipo falla, invocar la instalación existente explícitamente: `node "C:\Program Files\nodejs\node_modules\npm\bin\npm-cli.js" ci`.
+D1 y sus esquemas anteriores se conservan; no se ha migrado automáticamente su contenido a Supabase. No eliminar ese vínculo antes de decidir cómo recuperar posibles datos de 0.1.
 
-## Verificar
-
-```powershell
-npm run typecheck
-npm test
-node scripts/test-api.mjs
-npm run build
-```
-
-La prueba de API requiere el servidor local en el puerto 8787, genera cuentas QA sintéticas y limpia sus actividades al terminar. Nunca usar ese script contra producción.
-
-## Carpetas
-
-- `src/`: React, tipos, reglas de fechas/captura y estilos Tailwind/CSS.
-- `worker/`: API autenticada, validación y adaptadores de Google/voz.
-- `db/schema.ts`, `drizzle/`: esquema y migración.
-- `public/`: logo, fuente con licencia OFL, iconos, manifiesto y service worker.
-- `docs/CONFIGURACION.md`: secretos necesarios y pasos pendientes.
-- `docs/VERIFICACION.md`: evidencia y límites de esta versión.
-- `docs/HISTORIAL.md`: registro real de decisiones e implementación.
-
-## Estado de integraciones
-
-Google OAuth y el adaptador de transcripción están preparados, sin claves y sin pruebas reales. Los avisos con la app cerrada todavía necesitan motor de envío y cola duradera. La PWA no implica que estos avisos funcionen. Ver la matriz de verificación antes de considerar completo el MVP del PRD.
-
-La versión privada usa datos ficticios. No se han habilitado altas públicas para menores. GitHub público, Google Docs, vídeo y entrega al concurso quedan fuera de esta primera construcción.
+El sitio conserva su audiencia pública; el contenido personal requiere autenticación. Google comienza en Testing. Consultar docs/CONFIGURACION.md y docs/VERIFICACION.md para los pendientes y las pruebas reales. No se ha enviado el proyecto al concurso ni publicado un repositorio o vídeo.

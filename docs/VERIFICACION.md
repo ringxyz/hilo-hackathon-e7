@@ -1,4 +1,24 @@
-# Verificación de Hilo 0.1
+# Verificación de Hilo 0.2
+
+14 de octubre de 2026. Build de React/Vite/Worker y TypeScript correctos. Pruebas de dominio y perfil correctas. Prueba de límites del Worker: configuración pública sin secretos, autenticación obligatoria, origen cruzado rechazado y respuestas privadas sin caché.
+
+Supabase real: tres migraciones aplicadas. Tests SQL con datos ficticios y rollback: RLS, acceso cruzado denegado, revisión obsoleta, captura idempotente, sesión al completar, cuota IA 30, restricciones de Vault, avisos debidos, deduplicación, silencio y cancelación. No quedaron cuentas QA de esa transacción.
+
+Anthropic real: relato ficticio de fracciones, un tema identificado, siete fichas y cuatro fuentes de búsqueda. No se enviaron datos reales de un menor. La prueba no acredita todas las materias ni ausencia de errores educativos.
+
+Recordatorios: Edge Function hilo-push v2 activa; cron cada minuto devuelve HTTP 200 con cola vacía. Esto comprueba la ejecución del motor, no la entrega a un teléfono.
+
+Google Cloud: Calendar API aparece como «API habilitada». OAuth externo en modo de prueba y cliente web creados. Esto todavía no comprueba una conexión de calendario desde Hilo.
+
+Interfaz 0.2: revisión local aislada con adaptador simulado, fuera del build. Onboarding adolescente 13 años/2.º ESO; IA bloqueada hasta autorización del adulto; confirmar temas, mostrar respuestas y fuentes, marcar conocido y agrupar para examen. Cambio a adulto y ejemplos de trabajo comprobados. Vistas de Repaso/fichas revisadas a 390×844 y 360×800, sin desbordamiento horizontal. El simulador no comprueba autenticación ni persistencia real.
+
+Proveedor Google habilitado: comprobado mediante /auth/v1/settings, HTTP 200 y external.google=true. Cinco usuarios de prueba añadidos por el propietario, con captura de la lista guardada.
+
+Pendientes: entrada OAuth real, Calendar real, persistencia desde la UI autenticada, voz con micrófono y notificaciones con app cerrada en Android/iPhone. Versión 0.2 preparada para publicar en este punto. Mantener estas diferencias en la presentación del hackatón.
+
+## Evidencia histórica de Hilo 0.1
+
+Lo siguiente corresponde a D1 y al acceso anterior; no sustituye las pruebas Supabase de 0.2.
 
 Fecha: 14 de octubre de 2026. Entorno: Windows, Node 22.16, D1 local y navegador integrado de Codex. Datos inventados.
 

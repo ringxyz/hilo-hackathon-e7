@@ -8,6 +8,11 @@ export type Activity = {
   estimated?: boolean; ambiguous?: string; revision?: number;
 };
 export type FocusSession = { activityId: string; status: "running" | "paused"; startedAt: number | null; elapsed: number; note: string; duration: number };
-export type Settings = { name: string; timezone: string; hideTimer: boolean; quietStart: string; quietEnd: string; demo: boolean };
+export type Profile = { audience: "adult" | "teen" | "child"; age: number | null; country: string; course: string; guardianConsent: boolean; aiConsent: boolean; completed: boolean };
+export type Settings = { name: string; timezone: string; hideTimer: boolean; quietStart: string; quietEnd: string; demo: boolean; profile: Profile };
 export type GoogleStatus = { configured: boolean; connected: boolean; needsReconnect?: boolean; calendarId?: string; readCalendar?: string; lastSync?: number };
-export type AppState = { activities: Activity[]; session: FocusSession | null; settings: Settings; google: GoogleStatus; voiceConfigured: boolean; remindersConfigured: boolean; authenticated: boolean };
+export type StudySource = { title: string; url: string };
+export type StudyCard = { id: string; question: string; answer: string; example: string; sources: StudySource[]; status: "new" | "again" | "known" };
+export type StudyDay = { id: string; date: string; subject: string; title: string; topics: string[]; cards: StudyCard[]; createdAt: number; reviewed: boolean };
+export type Exam = { id: string; title: string; date: string; dayIds: string[]; createdAt: number };
+export type AppState = { activities: Activity[]; session: FocusSession | null; settings: Settings; google: GoogleStatus; voiceConfigured: boolean; aiConfigured: boolean; remindersConfigured: boolean; vapidPublicKey: string | null; authenticated: boolean; studyDays: StudyDay[]; exams: Exam[] };

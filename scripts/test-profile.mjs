@@ -1,0 +1,12 @@
+import {build} from 'esbuild';
+import assert from 'node:assert/strict';
+await build({entryPoints:['worker/profile.ts'],outfile:'.sites-runtime/tests/profile.mjs',bundle:true,platform:'node',format:'esm'});
+const {profileSchema}=await import('../.sites-runtime/tests/profile.mjs');
+const teen={audience:'teen',age:13,country:'España',course:'2.º ESO',guardianConsent:true,aiConsent:true,completed:true};
+assert.equal(profileSchema.safeParse(teen).success,true);
+for(const changes of [{age:3},{age:18},{age:null},{guardianConsent:false},{course:''},{completed:false}])assert.equal(profileSchema.safeParse({...teen,...changes}).success,false);
+assert.equal(profileSchema.safeParse({...teen,audience:'adult',age:null,course:'',guardianConsent:false}).success,true);
+assert.equal(profileSchema.safeParse({...teen,audience:'child',age:8}).success,true);
+assert.equal(profileSchema.safeParse({...teen,audience:'child',age:13}).success,false);
+assert.equal(profileSchema.safeParse({...teen,aiConsent:false}).success,true);
+console.log('Profile boundaries passed: age bands, course, completion and guardian permission.');
