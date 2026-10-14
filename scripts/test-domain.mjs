@@ -1,0 +1,22 @@
+import { build } from 'esbuild';
+import { mkdir } from 'node:fs/promises';
+import assert from 'node:assert/strict';
+await mkdir('.sites-runtime/tests',{recursive:true});
+await build({entryPoints:['src/domain.ts'],outfile:'.sites-runtime/tests/domain.mjs',bundle:true,platform:'node',format:'esm'});
+const {parseCapture,addDays,localDate,occursOn,isDone,elapsedSeconds,pauseSession,timeToInstant}=await import('../.sites-runtime/tests/domain.mjs');
+assert.equal(addDays('2026-12-31',1),'2027-01-01');
+assert.equal(localDate(new Date('2026-10-14T22:30:00Z'),'Europe/Madrid'),'2026-10-15');
+const capture=parseCapture('Repasar historia; Preparar la mochila; Entrenamiento a las seis de la tarde','2026-10-14',true);
+assert.equal(capture.length,3);assert.equal(capture[0].date,'2026-10-15');assert.equal(capture[2].time,'18:00');assert.equal(capture[2].kind,'event');
+assert.ok(parseCapture('Cita mañana a las seis','2026-10-14')[0].ambiguous);
+assert.equal(parseCapture('Cita mañana a las nueve de la mañana','2026-10-14')[0].title,'Cita');
+assert.equal(parseCapture('Preparar mochila','2026-10-14')[0].date,null);
+assert.equal(parseCapture('Clase 2026-11-12 a las 18:30','2026-10-14')[0].date,'2026-11-12');
+const a={date:'2026-10-14',recurrence:'weekly',status:'pending',completedDates:['2026-10-14']};
+assert.equal(occursOn(a,'2026-10-21'),true);assert.equal(occursOn(a,'2026-10-22'),false);assert.equal(isDone(a,'2026-10-14'),true);assert.equal(isDone(a,'2026-10-21'),false);
+const s={activityId:'x',status:'running',startedAt:10000,elapsed:5,note:'',duration:900};
+assert.equal(elapsedSeconds(s,25000),20);const p=pauseSession(s,'apartado 3',25000);assert.equal(p.status,'paused');assert.equal(p.elapsed,20);assert.equal(elapsedSeconds(p,99999),20);assert.equal(p.note,'apartado 3');
+assert.equal(timeToInstant('2026-10-24','09:00','Europe/Madrid').toISOString(),'2026-10-24T07:00:00.000Z');
+assert.equal(timeToInstant('2026-10-25','09:00','Europe/Madrid').toISOString(),'2026-10-25T08:00:00.000Z');
+console.log('Domain assertions passed: captures, ambiguity, recurrence, return point and DST.');
+
