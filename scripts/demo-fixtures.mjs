@@ -48,6 +48,6 @@ export function demoFixtures(today = new Intl.DateTimeFormat('en-CA', { timeZone
     ] },
   ];
   return { settings: { name: 'Alex · Demo', timezone: 'Europe/Madrid', hideTimer: false, quietStart: '22:00', quietEnd: '08:00', demo: true, profile: { audience: 'adult', age: 18, country: 'España', course: 'Estudiante de muestra', guardianConsent: false, aiConsent: true, completed: true } }, activities,
-    session: { activityId: activities[0].id, status: 'paused', startedAt: null, elapsed: 180, note: 'Me quedé en el ejercicio 2. Siguiente paso: sumar 1/4 y 2/4.', duration: 20 }, studyDays,
+    session: { activityId: activities[0].id, status: 'paused', startedAt: null, elapsed: 180, note: 'Ejercicio 2. Siguiente paso: sumar 1/4 y 2/4.', duration: 1200 }, studyDays,
     exams: [{ id: randomUUID(), title: 'Repaso de práctica: fracciones y Egipto', date: day(15), dayIds: studyDays.slice(0, 2).map(d => d.id), createdAt: Date.now() }] };
 }
