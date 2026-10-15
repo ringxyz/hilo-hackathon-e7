@@ -1,3 +1,25 @@
+# Hilo v1.0 · Verificación de entrega
+
+**V1 — 19 de octubre de 2026**. Ejecución real el **15/10/2026**, Europe/Madrid.
+
+| Comprobación | Resultado de esta revisión |
+|---|---|
+| `npm run typecheck` | Correcto, 16:52:11–16:52:23 |
+| `npm test` | Correcto, 16:52:23–16:52:32; siete scripts de dominio, perfil, Worker, piloto, V1, identidad offline y completado |
+| `npm run build` | Correcto, 16:52:32–16:52:36 |
+| Cuenta con Calendar | Acceso real con contraseña Hilo, propietario correcto, estado autenticado y aislamiento de las actividades; conexión Google autorizada por el participante |
+| Datos | 15 actividades, sesión pausada, 3 días, 16 fichas, 1 examen. Los tres eventos Google sustituyen equivalentes locales; cuenta histórica conservada |
+| Recorrido observado | Ahora, retomar fracciones, captura íntegra «Comprar regalo para Lucía», Solo esto, pausa con nota, persistencia tras recarga y Agenda con salida 19:00 para cita 19:30 |
+| Posponer | La prueba real de 10 min reprogramó actividad y aviso; ocurrencia de prueba revertida y serie restaurada. Comportamiento final documentado en CIERRE-V1 |
+
+Salidas completas y fecha en `outputs/hackathon/v1-final/{typecheck,test,build}.log` y `checks.json`, excluidas del código servido. Las transacciones SQL con rollback y las pruebas de interfaz con adaptador sintético están identificadas por separado en `docs/CIERRE-V1.md`; no se presentan como nuevas pruebas físicas.
+
+Pendiente de cierre audiovisual: capturas finales, locución completa, subtítulos medidos y exportación MP4 de 120 s en ambas orientaciones. No se considera congelada toda la candidatura mientras falten esos materiales y su revisión.
+
+Siguen pendientes micrófono físico, instalación/push con pantalla bloqueada en móviles, renovación OAuth prolongada y restricciones de cuentas supervisadas. Sin certificación WCAG ni afirmaciones clínicas. Google sigue en Testing. No se ha enviado el formulario oficial.
+
+## ARCHIVO — no usar para evaluación: verificaciones anteriores
+
 > Registro histórico de la primera entrega. Para el estado actualizado de las integraciones consulta HISTORIAL.md; para la revisión del 14/10/2026, consulta [PILOTO-03.md](PILOTO-03.md). Los pendientes iniciales de Google, Supabase y el motor push que figuran abajo no describen la versión actual.
 
 # Verificación de Hilo 0.2

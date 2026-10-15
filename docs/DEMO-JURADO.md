@@ -1,13 +1,26 @@
-# Hilo · Cuenta de evaluación
+# Hilo v1.0 · Cuenta de evaluación
 
-La cuenta `prueba@hilo.example` utiliza un correo ficticio reservado. En la portada, abrir **¿Ya tienes cuenta? Entra aquí** y después **Acceso con correo y contraseña** y usar la contraseña incluida en la documentación técnica de la entrega. No necesita una cuenta de Google ni una bandeja de correo.
+**V1 — 19 de octubre de 2026**. Verificación real: 15/10/2026, Europe/Madrid. La etiqueta de entrega no representa una ejecución futura.
 
-Contiene 15 actividades: tareas, citas, repeticiones e ideas sin fecha; una sesión pausada con su nota de retorno; tres días de repaso con 16 fichas y un examen que agrupa dos días. El perfil **Alex · Demo** es un adulto ficticio de 18 años. Las fichas iniciales son ejemplos editoriales; no se presentan como una nueva ejecución de IA.
+Aplicación: https://hilo-tu-siguiente-paso.waikastudios.chatgpt.site/
 
-El calendario de muestra es la agenda propia de Hilo. Google Calendar aparece sin conectar: este correo ficticio no dispone de una cuenta ni de tokens de Google. La sincronización externa se documenta por separado. Los avisos de la cuenta requieren que el evaluador active voluntariamente su dispositivo; no se han registrado suscripciones ficticias ni se han enviado invitaciones.
+Pulsa **Entrar a Hilo**. Sin sesión, abre **¿Ya tienes cuenta? Entra aquí** y **Acceso con correo y contraseña**. Correo de evaluación: `waikarrss@gmail.com`. La contraseña exclusiva de Hilo figura únicamente en el [Google Doc técnico existente](https://docs.google.com/document/d/1YKbDPxQpC3I6OQw4LRvVIahstGaeHNXuuor28Eo0cW4/edit); no es una contraseña de Google y el jurado no necesita entrar en Google.
 
-Recorrido recomendado: retomar Repasar fracciones; guardar una idea sin cambiar de tarea; pausar con una nota; consultar Agenda y Después; abrir una ficha de Repaso; mostrar respuesta y fuente; abrir el examen de práctica.
+**Alex · Demo** es un adulto ficticio de 18 años. Base: 15 actividades, sesión pausada con nota, 3 días de estudio, 16 fichas y 1 examen que agrupa dos días. Las fichas son ejemplos editoriales, no resultados de una nueva ejecución de IA.
 
-La autenticación por contraseña, el estado del Worker, los recuentos y el aislamiento de los registros por propietario se comprobaron el 14/10/2026. La contraseña, el token de aprovisionamiento y los registros privados de verificación se conservan en `outputs/`, excluido de Git. El endpoint temporal de aprovisionamiento quedó cerrado con HTTP 410 tras crear la cuenta.
+El participante completó personalmente OAuth. Google Calendar está conectado al calendario separado **Hilo · Calendario de prueba**: tres eventos ficticios reales sustituyeron sus tres equivalentes locales para mantener 15 actividades. Hilo consulta el calendario seleccionado y solo escribe en el secundario creado por Hilo. El ICS usa instantes UTC y Hilo usa Europe/Madrid. No se crearon permisos ni suscripciones push ficticios. La cuenta anterior `prueba@hilo.example` permanece como muestra histórica sin Calendar, con sus contenidos conservados.
 
-`scripts/demo-fixtures.mjs` define exclusivamente datos ficticios y permite reproducir el contenido. No crea cuentas, no contiene contraseñas y no modifica usuarios reales.
+## Recorrido V1
+
+1. Inicio: Conóceme → Calendar → punto de regreso → Hoy → Después → Repaso.
+2. Retomar **Repasar fracciones**: siguiente paso, resolver el ejercicio 2, sumar 1/4 y 2/4.
+3. Guardar idea → escribir un pendiente ficticio → **Guardar tal cual en Después**. Guarda texto íntegro sin IA y conserva la tarea activa.
+4. **Pausar y dejar nota** → «Me quedé en el ejercicio 2» → guardar → recargar → retomar. Nota, paso y tiempo se conservan.
+5. **Solo esto**: tarea, paso y reloj opcional sin navegación. Pausa y captura siguen disponibles.
+6. Agenda → Paseo de la tarde: **Cita 19:30 · Sal a las 19:00**. Posponer 10 min / 1 h / Mañana mueve actividad y aviso. Una repetición se separa como ocurrencia puntual, sin mover las futuras. En citas de Google, el cambio es local de Hilo.
+7. Después → revisar pendientes sin fecha. Repaso → **Hoy solo 5**, una ficha por pantalla, respuesta y fuentes; examen de práctica.
+8. Ajustes → idioma, reloj, movimiento reducido, contraste, tamaño de letra, zona y exportación. Los avisos se activan voluntariamente por dispositivo.
+
+Las operaciones del jurado modifican esta cuenta compartida de muestra. `scripts/demo-fixtures.mjs` reproduce datos ficticios sin credenciales; el aprovisionamiento temporal quedó cerrado con HTTP 410. Se comprobaron autenticación real, estado del Worker y aislamiento por propietario.
+
+Captura offline en IndexedDB con reintento por cuenta e idempotencia. Las demás operaciones necesitan red. Pendiente: micrófono y push con pantalla bloqueada en móviles físicos, renovación OAuth prolongada. Hilo es un espacio personal para organizarte y repasar, sin eficacia clínica demostrada.

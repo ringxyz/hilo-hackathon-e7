@@ -1,6 +1,8 @@
-# Hilo · A tu ritmo
+# Hilo v1.0 · A tu ritmo
 
 App para guardar pendientes, recuperar el siguiente paso y repasar lo aprendido. V1 para el piloto familiar y el hackatón. Revisión más reciente: [CIERRE-V1.md](docs/CIERRE-V1.md). Registro anterior: [V1-VERIFICACION.md](docs/V1-VERIFICACION.md).
+
+**V1 — 19 de octubre de 2026**. Verificación real: 15/10/2026. [App pública](https://hilo-tu-siguiente-paso.waikastudios.chatgpt.site/) · [Documentación técnica](https://docs.google.com/document/d/1YKbDPxQpC3I6OQw4LRvVIahstGaeHNXuuor28Eo0cW4/edit) · [Historial de prompts](https://docs.google.com/document/d/1ModC2RSVul3quD_H7kcXAqlkYZdT8S32DlngnLhiGsY/edit) · [Carpeta de entrega](https://drive.google.com/drive/folders/142ApUa4HOPODI5dgiiuWmM3lLzOXUjcw). La revisión audiovisual y la congelación completa siguen pendientes hasta verificar los MP4 finales.
 
 ## Stack
 
@@ -10,10 +12,10 @@ React 19 + Vite 8 + TypeScript + Tailwind 4. API en Cloudflare Worker y PostgreS
 
 - Entrada con Google mediante Supabase. Onboarding de dos pasos: adulto, adolescente o niño acompañado; ejemplos adaptados e IA opcional.
 - Entrada por correo y contraseña para cuentas de evaluación previamente creadas. La muestra del jurado se describe en docs/DEMO-JURADO.md.
-- Inicio: punto de regreso, Google Calendar, hasta tres actividades de Hoy, dos ideas de Después y acceso al repaso.
+- Inicio: Conóceme, Google Calendar, punto de regreso, hasta tres actividades de Hoy, dos ideas de Después y acceso al repaso.
 - Cuéntamelo: escritura o dictado, guardado directo en Después y revisión opcional con IA. La cola local reintenta con la misma clave y la misma cuenta.
 - Ahora y Solo esto: tarea activa, siguiente paso, temporizador opcional, pausa con nota y retorno. Después permite pasar una idea a Hoy en un toque.
-- Agenda: citas, desplazamiento, aviso independiente de salida, posponer 10 minutos/1 hora/mañana, repeticiones y horario de silencio.
+- Agenda: citas, desplazamiento, aviso independiente de salida, posponer actividad y aviso 10 minutos/1 hora/mañana, repeticiones y horario de silencio.
 - Repaso: relato de clase, confirmación de temas, búsqueda de fuentes, fichas por día y agrupación para examen. Respuestas editables y estado de práctica.
 - Ajustes: perfil, consentimiento, zona horaria, reloj, reducción de movimiento, contraste, tamaño de letra, Google Calendar, avisos por dispositivo, invitaciones, exportación y borrado de datos propios.
 
@@ -27,7 +29,7 @@ Comandos: npm ci; npm run build. En dos terminales, npm run dev:api y npm run de
 
 La aplicación requiere una sesión Supabase real. Para OAuth local debe autorizarse expresamente ese retorno en Supabase; no se añadieron comodines ni localhost en producción. Después de editar worker/, repetir el build. React tiene HMR.
 
-Validación: npm run typecheck, npm test, npm run build. supabase/tests.sql comprueba RLS, idempotencia, revisiones, cuota de IA y avisos en una transacción revertida. scripts/test-v1-database.sql y scripts/test-v1-queue.sql amplían la prueba real de Supabase para pausa, posponer, separación de avisos y cambios de hora. scripts/test-api.mjs es la prueba histórica de D1 0.1; no valida la versión actual.
+Validación: npm run typecheck, npm test, npm run build. supabase/tests.sql comprueba RLS, idempotencia, revisiones, cuota de IA y avisos en una transacción revertida. scripts/test-reschedule.sql, scripts/test-v1-database.sql y scripts/test-v1-queue.sql amplían la prueba real de Supabase para pausa, posponer, separación de avisos y cambios de hora. scripts/test-api.mjs es la prueba histórica de D1 0.1; no valida la versión actual.
 
 ## Datos y límites
 

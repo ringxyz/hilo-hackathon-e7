@@ -1,3 +1,15 @@
+# Hilo v1.0 · Piloto interno
+
+**V1 — 19 de octubre de 2026**. Revisión real: 15/10/2026. Se mantiene el alcance de piloto personal/familiar, con acompañamiento adulto para menores y consentimiento opcional para IA.
+
+La V1 incorpora entrada con un botón, Conóceme en Inicio, Calendar en el Dashboard, punto de regreso, captura directa sin IA, pausa con nota y Cancelar, Solo esto sin navegación, hora de salida, reprogramación de actividad/aviso y repaso inicial de cinco fichas. Ajustes conserva idioma, zona, silencio y exportación y añade movimiento reducido, contraste y tamaño de letra.
+
+Cuenta principal del jurado y calendario ficticio real: `docs/DEMO-JURADO.md`. No compartir contraseñas de Google. La contraseña Hilo se mantiene exclusivamente en el Google Doc técnico existente. El perfil de muestra es adulto ficticio, sin información de familiares ni estudiantes reales.
+
+La cola offline conserva capturas por cuenta y evita duplicados; el resto necesita conexión. No se garantiza la recepción de avisos en todos los móviles. Validación técnica y límites actuales: `docs/VERIFICACION.md` y `docs/CIERRE-V1.md`.
+
+## ARCHIVO — no usar para evaluación: piloto 0.3
+
 # Hilo 0.3 · Piloto interno
 
 Revisión del 14 de octubre de 2026. Sigue siendo una prueba académica para personas invitadas, sin dominio propio ni lanzamiento comercial.

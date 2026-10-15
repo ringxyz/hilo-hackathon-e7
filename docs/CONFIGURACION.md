@@ -1,3 +1,21 @@
+# Configuración de Hilo v1.0
+
+**V1 — 19 de octubre de 2026**. Estado revisado el 15/10/2026. El registro de 0.2 se conserva abajo como antecedente.
+
+La arquitectura vigente usa React/Vite, Worker, Supabase Auth/PostgreSQL, Anthropic y Google Calendar. Aplicar en orden todas las migraciones de `supabase/migrations/`, incluidas las de foco/avisos, coherencia horaria, completado y `20261015141657_hilo_reschedule_activity.sql`. No ejecutar los scripts SQL de pruebas como migraciones: contienen transacciones que se revierten.
+
+Calendar se conecta en Inicio o Ajustes, con el mismo componente. Lee el calendario elegido y escribe solo en el propio de Hilo; reprogramar una cita importada modifica únicamente la copia de Hilo. La autorización real de `waikarrss@gmail.com` fue completada por el participante; se añadió ese correo como sexto usuario de prueba en Google Auth Platform. OAuth continúa en Testing, con las restricciones de renovación de tokens del proveedor.
+
+La cuenta de evaluación, su acceso y los tres eventos ficticios importados están documentados en `docs/DEMO-JURADO.md`. Credenciales únicamente en el Google Doc técnico existente, sin claves administrativas en Git.
+
+Captura offline: IndexedDB por propietario y clave estable de solicitud, con reintento al abrir la misma cuenta con conexión. El service worker solo conserva recursos públicos. Resto de operaciones con red. Actividades: zona IANA, instante UTC, desplazamiento y nota de retorno. Ajustes: reloj, movimiento reducido, contraste, letra e idioma.
+
+Posponer mueve actividad y recordatorio; las ocurrencias recurrentes se separan sin alterar las futuras. El silencio se calcula en la zona de la cuenta. `hilo-push` tiene autenticación propia y secretos en Vault; la aceptación de envío no prueba recepción física. No se han verificado micrófono ni avisos con pantalla bloqueada en Android/iPhone.
+
+Referencias vigentes: `docs/CIERRE-V1.md`, `docs/V1-VERIFICACION.md` y `docs/VERIFICACION.md`. Node.js 22.13+, `npm ci`, `npm run typecheck`, `npm test`, `npm run build`; desarrollo en dos terminales con `npm run dev:api` y `npm run dev`.
+
+## ARCHIVO — no usar para evaluación: configuración histórica 0.2
+
 # Configuración de Hilo 0.2
 
 Estado comprobado el 14 de octubre de 2026.
