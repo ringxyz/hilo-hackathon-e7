@@ -24,3 +24,11 @@ El participante completó personalmente OAuth. Google Calendar está conectado a
 Las operaciones del jurado modifican esta cuenta compartida de muestra. `scripts/demo-fixtures.mjs` reproduce datos ficticios sin credenciales; el aprovisionamiento temporal quedó cerrado con HTTP 410. Se comprobaron autenticación real, estado del Worker y aislamiento por propietario.
 
 Captura offline en IndexedDB con reintento por cuenta e idempotencia. Las demás operaciones necesitan red. Pendiente: micrófono y push con pantalla bloqueada en móviles físicos, renovación OAuth prolongada. Hilo es un espacio personal para organizarte y repasar, sin eficacia clínica demostrada.
+
+## Vídeo y evidencia final
+
+[Demo vertical, 1080×1920](https://drive.google.com/file/d/1qjF2b3XoMFwJZYLKwZ1XgkWfCGuOU8ze/view) · [Demo horizontal, 1920×1080](https://drive.google.com/file/d/1ezRCb8KnKYWm1uW5x66Rq8H8k0Wnhu7M/view). Ambos MP4 duran 120 s a 30 fps, con la misma voz, guion y subtítulos españoles incrustados. Montaje de capturas reales de la cuenta; el consentimiento OAuth no se grabó.
+
+El jurado puede repetir el recorrido con la cuenta compartida. La idea de Lucía que aparece en el vídeo se retiró después de capturarla; los 15 registros base, la nota y los 12 minutos restantes quedaron restaurados. Verificación final de datos: 15/10/2026 17:30:08 Europe/Madrid.
+
+[Índice de los dos Docs, vídeos, seis capturas y checklist](ENTREGA-V1.md). Credenciales únicamente en la sección 6 del Google Doc técnico existente.

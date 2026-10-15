@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto';
 export function demoFixtures(today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Madrid' }).format(new Date())) {
   const day = n => { const d = new Date(today + 'T12:00:00Z'); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); };
-  const activity = (title, extra = {}) => ({ id: randomUUID(), title, kind: 'task', date: today, time: null, duration: 15, nextStep: 'Abrir los apuntes y elegir el primer ejercicio.', note: '', status: 'pending', color: 'pink', recurrence: 'none', source: 'hilo', reminder: false, ...extra });
+  const activity = (title, extra = {}) => ({ id: randomUUID(), title, kind: 'task', date: today, time: null, duration: 15, nextStep: 'Abrir los apuntes y elegir el primer ejercicio.', note: '', returnNote: '', status: 'pending', color: 'pink', recurrence: 'none', source: 'hilo', reminder: false, timezone: 'Europe/Madrid', travelMinutes: extra.kind === 'event' ? 30 : 0, ...extra });
   const activities = [
     activity('Repasar fracciones', { duration: 20, nextStep: 'Resolver el ejercicio 2: sumar 1/4 y 2/4.', note: 'Muestra ficticia. Ya he leído la explicación y resuelto el primer ejercicio.', recurrence: 'daily' }),
     activity('Preparar la mochila', { duration: 10, nextStep: 'Poner el cuaderno y el estuche junto a los libros.', color: 'mint', recurrence: 'daily' }),
@@ -10,7 +10,7 @@ export function demoFixtures(today = new Intl.DateTimeFormat('en-CA', { timeZone
     activity('Terminar un dibujo', { date: day(2), nextStep: 'Elegir dos colores para el fondo.', color: 'peach' }),
     activity('Organizar el escritorio', { status: 'done', duration: 10, nextStep: 'Guardar los lápices en su caja.', color: 'mint' }),
     activity('Entrenamiento de muestra', { kind: 'event', time: '18:00', duration: 60, nextStep: '', color: 'blue', recurrence: 'weekly' }),
-    activity('Paseo de la tarde', { kind: 'event', time: '19:30', duration: 25, nextStep: '', color: 'mint', recurrence: 'daily' }),
+    activity('Paseo de la tarde', { kind: 'event', time: '19:30', duration: 25, nextStep: '', color: 'mint', recurrence: 'daily', reminder: true }),
     activity('Sesión de repaso', { kind: 'event', date: day(1), time: '17:00', duration: 30, nextStep: '', color: 'pink' }),
     activity('Visita a la biblioteca de muestra', { kind: 'event', date: day(3), time: '11:00', duration: 45, nextStep: '', color: 'peach' }),
     activity('Examen de práctica', { kind: 'event', date: day(15), time: '10:00', duration: 50, nextStep: '', color: 'blue' }),
@@ -47,7 +47,8 @@ export function demoFixtures(today = new Intl.DateTimeFormat('en-CA', { timeZone
       card('¿Qué mantiene a los planetas en órbita alrededor del Sol?', 'La gravedad del Sol, junto con el movimiento de los planetas.', 'La Tierra mantiene su órbita por la interacción entre gravedad y movimiento.', science, 'again'),
     ] },
   ];
-  return { settings: { name: 'Alex · Demo', timezone: 'Europe/Madrid', hideTimer: false, quietStart: '22:00', quietEnd: '08:00', demo: true, profile: { audience: 'adult', age: 18, country: 'España', course: 'Estudiante de muestra', guardianConsent: false, aiConsent: true, completed: true } }, activities,
-    session: { activityId: activities[0].id, status: 'paused', startedAt: null, elapsed: 180, note: 'Ejercicio 2. Siguiente paso: sumar 1/4 y 2/4.', duration: 1200 }, studyDays,
+  activities[0].returnNote = 'Me quedé en el ejercicio 2';
+  return { settings: { name: 'Alex · Demo', timezone: 'Europe/Madrid', hideTimer: false, quietStart: '22:00', quietEnd: '08:00', demo: true, reducedMotion: false, highContrast: false, fontSize: 'medium', language: 'es', calendarDismissed: false, profile: { audience: 'adult', age: 18, country: 'España', course: 'Estudiante de muestra', guardianConsent: false, aiConsent: true, completed: true } }, activities,
+    session: { activityId: activities[0].id, status: 'paused', startedAt: null, elapsed: 480, note: 'Me quedé en el ejercicio 2', duration: 1200 }, studyDays,
     exams: [{ id: randomUUID(), title: 'Repaso de práctica: fracciones y Egipto', date: day(15), dayIds: studyDays.slice(0, 2).map(d => d.id), createdAt: Date.now() }] };
 }

@@ -8,6 +8,8 @@ Cuenta principal del jurado y calendario ficticio real: `docs/DEMO-JURADO.md`. N
 
 La cola offline conserva capturas por cuenta y evita duplicados; el resto necesita conexión. No se garantiza la recepción de avisos en todos los móviles. Validación técnica y límites actuales: `docs/VERIFICACION.md` y `docs/CIERRE-V1.md`.
 
+Cierre de materiales el 15/10/2026: [índice V1 y checklist](ENTREGA-V1.md). Hay dos vídeos funcionales de 2 minutos, seis capturas nuevas, guion y voz aparte. La demo real quedó restaurada y revalidada a las 17:30:08 (15 actividades, pausa, 3 días, 16 fichas, 1 examen). El vídeo de 15 segundos y los materiales de producción se conservan identificados como archivo, sin ofrecerse como entrega final. El envío formal del concurso sigue pendiente.
+
 ## ARCHIVO — no usar para evaluación: piloto 0.3
 
 # Hilo 0.3 · Piloto interno

@@ -12,7 +12,9 @@ Captura offline: IndexedDB por propietario y clave estable de solicitud, con rei
 
 Posponer mueve actividad y recordatorio; las ocurrencias recurrentes se separan sin alterar las futuras. El silencio se calcula en la zona de la cuenta. `hilo-push` tiene autenticación propia y secretos en Vault; la aceptación de envío no prueba recepción física. No se han verificado micrófono ni avisos con pantalla bloqueada en Android/iPhone.
 
-Referencias vigentes: `docs/CIERRE-V1.md`, `docs/V1-VERIFICACION.md` y `docs/VERIFICACION.md`. Node.js 22.13+, `npm ci`, `npm run typecheck`, `npm test`, `npm run build`; desarrollo en dos terminales con `npm run dev:api` y `npm run dev`.
+Referencias vigentes: `docs/CIERRE-V1.md`, `docs/V1-VERIFICACION.md`, `docs/VERIFICACION.md` y `docs/ENTREGA-V1.md`. Node.js 22.13+, `npm ci`, `npm run typecheck`, `npm test`, `npm run build`; desarrollo en dos terminales con `npm run dev:api` y `npm run dev`.
+
+El montaje de entrega no requiere claves de Flow ni Higgsfield para ejecutar Hilo. La demo final usa capturas reales y voz de Google Flow (Algieba), montadas con Higgsedit. Los MP4, el guion y las capturas están enlazados en `docs/ENTREGA-V1.md`. No se incorporan voces, credenciales ni archivos privados al código servido. Las tres comprobaciones del repositorio terminaron con código 0 el 15/10/2026 a las 17:30:33 Europe/Madrid.
 
 ## ARCHIVO — no usar para evaluación: configuración histórica 0.2
 

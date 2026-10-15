@@ -2,7 +2,7 @@
 
 App para guardar pendientes, recuperar el siguiente paso y repasar lo aprendido. V1 para el piloto familiar y el hackatón. Revisión más reciente: [CIERRE-V1.md](docs/CIERRE-V1.md). Registro anterior: [V1-VERIFICACION.md](docs/V1-VERIFICACION.md).
 
-**V1 — 19 de octubre de 2026**. Verificación real: 15/10/2026. [App pública](https://hilo-tu-siguiente-paso.waikastudios.chatgpt.site/) · [Documentación técnica](https://docs.google.com/document/d/1YKbDPxQpC3I6OQw4LRvVIahstGaeHNXuuor28Eo0cW4/edit) · [Historial de prompts](https://docs.google.com/document/d/1ModC2RSVul3quD_H7kcXAqlkYZdT8S32DlngnLhiGsY/edit) · [Carpeta de entrega](https://drive.google.com/drive/folders/142ApUa4HOPODI5dgiiuWmM3lLzOXUjcw). La revisión audiovisual y la congelación completa siguen pendientes hasta verificar los MP4 finales.
+**V1 — 19 de octubre de 2026**. Verificación y cierre real: 15/10/2026. [App pública](https://hilo-tu-siguiente-paso.waikastudios.chatgpt.site/) · [Documentación técnica](https://docs.google.com/document/d/1YKbDPxQpC3I6OQw4LRvVIahstGaeHNXuuor28Eo0cW4/edit) · [Historial de prompts](https://docs.google.com/document/d/1ModC2RSVul3quD_H7kcXAqlkYZdT8S32DlngnLhiGsY/edit) · [Carpeta de entrega](https://drive.google.com/drive/folders/142ApUa4HOPODI5dgiiuWmM3lLzOXUjcw). Los dos MP4 finales de 120 s, la voz, el guion y seis capturas V1 están compartidos por enlace. [Índice, verificaciones y checklist de entrega](docs/ENTREGA-V1.md). El formulario oficial sigue pendiente de envío.
 
 ## Stack
 

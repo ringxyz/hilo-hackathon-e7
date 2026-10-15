@@ -4,9 +4,9 @@
 
 | Comprobación | Resultado de esta revisión |
 |---|---|
-| `npm run typecheck` | Correcto, 16:52:11–16:52:23 |
-| `npm test` | Correcto, 16:52:23–16:52:32; siete scripts de dominio, perfil, Worker, piloto, V1, identidad offline y completado |
-| `npm run build` | Correcto, 16:52:32–16:52:36 |
+| `npm run typecheck` | Correcto, código 0; cierre de la revisión 17:30:33 |
+| `npm test` | Correcto, código 0; siete scripts de dominio, perfil, Worker, piloto, V1, identidad offline y completado |
+| `npm run build` | Correcto, código 0; cierre de la revisión 17:30:33 |
 | Cuenta con Calendar | Acceso real con contraseña Hilo, propietario correcto, estado autenticado y aislamiento de las actividades; conexión Google autorizada por el participante |
 | Datos | 15 actividades, sesión pausada, 3 días, 16 fichas, 1 examen. Los tres eventos Google sustituyen equivalentes locales; cuenta histórica conservada |
 | Recorrido observado | Ahora, retomar fracciones, captura íntegra «Comprar regalo para Lucía», Solo esto, pausa con nota, persistencia tras recarga y Agenda con salida 19:00 para cita 19:30 |
@@ -14,7 +14,9 @@
 
 Salidas completas y fecha en `outputs/hackathon/v1-final/{typecheck,test,build}.log` y `checks.json`, excluidas del código servido. Las transacciones SQL con rollback y las pruebas de interfaz con adaptador sintético están identificadas por separado en `docs/CIERRE-V1.md`; no se presentan como nuevas pruebas físicas.
 
-Pendiente de cierre audiovisual: capturas finales, locución completa, subtítulos medidos y exportación MP4 de 120 s en ambas orientaciones. No se considera congelada toda la candidatura mientras falten esos materiales y su revisión.
+Audiovisual cerrado el 15/10/2026: MP4 vertical 1080×1920 y horizontal 1920×1080, ambos de 120,000 s y 30 fps, con audio de 120 s y subtítulos españoles quemados. Decodificación completa sin errores; tamaño, duración y SHA-256 registrados. Revisión visual de apertura, flujo y cierre. Son montajes de capturas reales con recortes y acercamientos; no una grabación continua del consentimiento OAuth. Google Flow generó 13 tomas con voz Algieba (Omni 1.1 Flash), incluida la corrección de la toma 07. Higgsedit realizó el montaje/exportación. La música suave es original. Subtítulos alineados al audio: 63 segmentos, 240 palabras, similitud de transcripción 0,9647. No se atribuye la voz a Dylan.
+
+Los dos vídeos, voz aparte, guion, SRT y seis capturas reales V1 están en la carpeta compartida. [Índice y hashes](ENTREGA-V1.md). La base de datos de muestra se volvió a comprobar a las 17:30:08; la idea temporal de Lucía usada en la grabación se retiró y la base quedó en 15 actividades con sesión pausada.
 
 Siguen pendientes micrófono físico, instalación/push con pantalla bloqueada en móviles, renovación OAuth prolongada y restricciones de cuentas supervisadas. Sin certificación WCAG ni afirmaciones clínicas. Google sigue en Testing. No se ha enviado el formulario oficial.
 
