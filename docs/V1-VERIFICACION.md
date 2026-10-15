@@ -63,3 +63,9 @@ El asesor de Supabase conserva dos avisos previos: extensión `pg_net` en esquem
 - Entrega formal de documentos, historial de prompts y vídeo del hackatón. Publicar esta V1 no equivale a enviar la candidatura.
 
 Las evidencias visuales y resultados de despliegue se guardan en `outputs/` local, fuera del repositorio y del paquete servido.
+
+## Ajuste de avisos: «Listo» · 15 de octubre
+
+El diálogo de avisos permite marcar la actividad como terminada sin iniciar foco. La operación es transaccional e idempotente: completa solo la ocurrencia elegida cuando hay repetición, resuelve el aviso de la cita y el de salida, y conserva intactas las siguientes fechas. En citas importadas, el estado terminado es local de Hilo y se conserva al sincronizar; no se modifica el evento de Google.
+
+`scripts/test-reminder-done.sql` ejecutado en Supabase con rollback: cita de ayer completada, ambos avisos resueltos, reintentos sin reapertura, repetición futura pendiente, foco de hoy conservado y acceso cruzado denegado. `scripts/test-reminder-done.mjs` comprueba la sincronización de Google con respuestas sintéticas y ninguna escritura al calendario externo. Los avisos previos del asesor de seguridad no cambian.

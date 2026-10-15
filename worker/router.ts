@@ -40,7 +40,7 @@ export async function handle(request:Request,env:Env):Promise<Response>{
   dbResult(await repo.db.rpc('hilo_focus',{action:input.action,activity_id:input.activityId||null,note:input.note}));return result();
  }
  if(path==='/api/reminder/action'){
-  const input=z.object({requestId:z.string().uuid(),activityId:z.string().uuid(),occurrence:date,kind:z.enum(['appointment','departure']),action:z.enum(['10m','1h','tomorrow','start'])}).parse(b);
+  const input=z.object({requestId:z.string().uuid(),activityId:z.string().uuid(),occurrence:date,kind:z.enum(['appointment','departure']),action:z.enum(['10m','1h','tomorrow','start','done'])}).parse(b);
   const current=await repo.session();if(input.action==='start'&&current?.status==='running'&&current.activityId!==input.activityId)throw new ApiError('Pausa la actividad actual antes de cambiar.',409);
   dbResult(await repo.db.rpc('hilo_reminder_action',{request_id:input.requestId,activity_id:input.activityId,occurrence:input.occurrence,kind:input.kind,action:input.action}));return result();
  }
