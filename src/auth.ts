@@ -1,3 +1,4 @@
+import {clearQueue,OWNER_KEY} from './capture-queue';
 import { tr } from './i18n';
 import type { SupabaseClient } from '@supabase/supabase-js';
 let client: SupabaseClient | null = null;
@@ -14,7 +15,7 @@ export async function authClient() {
   })().catch(error => { starting = null; throw error; });
   return starting;
 }
-export async function accessToken() { const sb = await authClient(); const { data, error } = await sb.auth.getSession(); if (error) throw error; return data.session?.access_token; }
+export async function accessToken(expectedOwner?:string) { const sb = await authClient(); const { data, error } = await sb.auth.getSession(); if (error) throw error; if(expectedOwner&&data.session?.user.id!==expectedOwner)throw new Error(tr('Inicia sesión para abrir tu espacio.')); return data.session?.access_token; }
 export async function signIn(calendar = false) {
   const sb = await authClient();
   const { error } = await sb.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: location.origin + (calendar ? '/?view=ajustes&calendar=1' : '/'), ...(calendar ? { scopes: 'https://www.googleapis.com/auth/calendar.calendarlist.readonly https://www.googleapis.com/auth/calendar.events.readonly https://www.googleapis.com/auth/calendar.app.created', queryParams: { access_type: 'offline', prompt: 'consent' } } : {}) } });
@@ -23,5 +24,5 @@ export async function signIn(calendar = false) {
 export async function signOut() {
   const sb=await authClient();
   if('serviceWorker' in navigator){const registration=await navigator.serviceWorker.getRegistration();const sub=await registration?.pushManager.getSubscription();if(sub){const token=await accessToken();try{await fetch('/api/push/unsubscribe',{method:'POST',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({endpoint:sub.endpoint}),signal:AbortSignal.timeout(5000)});}catch{}await sub.unsubscribe();}}
-  const {error}=await sb.auth.signOut({scope:'local'});if(error)throw error;location.assign('/');
+  const {data}=await sb.auth.getSession();if(data.session?.user.id)await clearQueue(data.session.user.id);localStorage.removeItem(OWNER_KEY);sessionStorage.removeItem('hilo-solo');const {error}=await sb.auth.signOut({scope:'local'});if(error)throw error;location.assign('/');
 }

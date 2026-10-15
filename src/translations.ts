@@ -454,3 +454,5 @@ Object.assign(english,{
 'No se pudo guardar en Supabase. Tu entrada sigue disponible.':'Could not save to Supabase. Your input is still available.',
 'Supabase está pendiente de configuración.':'Supabase has not been configured yet.'
 });
+
+Object.assign(english,{'Inicio':'Home','Esa hora no existe por el cambio horario. Elige otra hora.':'This time does not exist because the clocks change. Choose another time.','Elige una actividad pendiente.':'Choose an unfinished activity.'});

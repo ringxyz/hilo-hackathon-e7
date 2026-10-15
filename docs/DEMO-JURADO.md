@@ -1,6 +1,6 @@
 # Hilo · Cuenta de evaluación
 
-La cuenta `prueba@hilo.example` utiliza un correo ficticio reservado. En la portada, abrir **Acceso con correo y contraseña** y usar la contraseña incluida en la documentación técnica de la entrega. No necesita una cuenta de Google ni una bandeja de correo.
+La cuenta `prueba@hilo.example` utiliza un correo ficticio reservado. En la portada, abrir **¿Ya tienes cuenta? Entra aquí** y después **Acceso con correo y contraseña** y usar la contraseña incluida en la documentación técnica de la entrega. No necesita una cuenta de Google ni una bandeja de correo.
 
 Contiene 15 actividades: tareas, citas, repeticiones e ideas sin fecha; una sesión pausada con su nota de retorno; tres días de repaso con 16 fichas y un examen que agrupa dos días. El perfil **Alex · Demo** es un adulto ficticio de 18 años. Las fichas iniciales son ejemplos editoriales; no se presentan como una nueva ejecución de IA.
 

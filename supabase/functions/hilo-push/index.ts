@@ -7,12 +7,12 @@ function result<T>(r:{data:T;error:unknown}):T{if(r.error)throw new Error('Datab
 function endpointAllowed(value:string){try{const url=new URL(value);return url.protocol==='https:'&&!url.username&&!url.password&&(!url.port||url.port==='443')&&['fcm.googleapis.com','updates.push.services.mozilla.com','web.push.apple.com','wns.windows.com'].some(host=>url.hostname===host||url.hostname.endsWith('.'+host));}catch{return false;}}
 async function equalSecret(a:string,b:string){if(!a||!b)return false;const hash=async(v:string)=>new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(v)));const [x,y]=await Promise.all([hash(a),hash(b)]);let delta=0;for(let i=0;i<x.length;i++)delta|=x[i]^y[i];return delta===0;}
 
-async function send(owner:string,tag:string,test=false){
+async function send(owner:string,tag:string,test=false,reminder?:{activity_id:string;occurrence:string;kind:string}){
   const subscriptions=result(await db.from('hilo_push_subscriptions').select('id,subscription').eq('owner',owner).limit(10))||[];
   let sent=0,retry=false;
   await Promise.all(subscriptions.map(async row=>{
     if(!endpointAllowed(row.subscription?.endpoint||'')){result(await db.from('hilo_push_subscriptions').delete().eq('id',row.id));return;}
-    try{await webpush.sendNotification(row.subscription,JSON.stringify({title:'Hilo',body:row.subscription.language==='en'?(test?'This is your test notification. Your device is connected.':'You have a scheduled activity. Open Hilo for your next step.'):(test?'Este es tu aviso de prueba. Tu dispositivo está conectado.':'Tienes una actividad programada. Abre Hilo para ver tu siguiente paso.'),url:'/?view=agenda',tag}),{TTL:120,urgency:'normal',timeout:7000});sent++;}
+    try{await webpush.sendNotification(row.subscription,JSON.stringify({title:'Hilo',body:row.subscription.language==='en'?(test?'This is your test notification. Your device is connected.':reminder?.kind==='departure'?'It is time to leave. Open Hilo to see your appointment.':'You have a scheduled activity. Open Hilo for your next step.'):(test?'Este es tu aviso de prueba. Tu dispositivo está conectado.':reminder?.kind==='departure'?'Es hora de salir. Abre Hilo para ver tu cita.':'Tienes una actividad programada. Abre Hilo para ver tu siguiente paso.'),url:reminder?'/?view=agenda&reminder='+reminder.activity_id+'&day='+reminder.occurrence+'&kind='+reminder.kind:'/?view=agenda',tag,reminder:!!reminder,language:row.subscription.language||'es'}),{TTL:120,urgency:'normal',timeout:7000});sent++;}
     catch(e){const code=(e as {statusCode?:number}).statusCode;if(code===404||code===410)result(await db.from('hilo_push_subscriptions').delete().eq('id',row.id));else retry=true;}
   }));
   return {sent,retry};
@@ -39,10 +39,11 @@ Deno.serve(async request=>{
       const profile=result(await db.from('hilo_profiles').select('settings').eq('id',job.owner).maybeSingle());
       const quiet=profile?result(await db.rpc('hilo_is_quiet',{settings:profile.settings,instant:new Date().toISOString()})):true;
       if(!current||quiet||current.revision!==job.revision||!current.payload.reminder||current.payload.status!=='pending'||current.payload.completedDates?.includes(job.occurrence)){
-        result(await db.from('hilo_push_jobs').update({state:'skipped'}).eq('id',job.id));return;
+        result(await db.from('hilo_push_jobs').update({state:'missed'}).eq('id',job.id).eq('state','sending').eq('leased_until',job.leased_until));return;
       }
-      const delivery=await send(job.owner,'hilo-'+job.activity_id+'-'+job.occurrence);sent+=delivery.sent;
-      result(await db.from('hilo_push_jobs').update({state:delivery.sent?'sent':delivery.retry&&job.attempts<3?'pending':delivery.retry?'failed':'skipped',leased_until:null,next_attempt:new Date(Date.now()+60000*job.attempts).toISOString()}).eq('id',job.id));
+      const lease=result(await db.from('hilo_push_jobs').select('state,leased_until').eq('id',job.id).single());if(lease.state!=='sending'||lease.leased_until!==job.leased_until)return;
+      const delivery=await send(job.owner,'hilo-'+job.activity_id+'-'+job.occurrence+'-'+job.kind,false,job);sent+=delivery.sent;
+      result(await db.from('hilo_push_jobs').update({state:delivery.sent?'sent':delivery.retry&&job.attempts<3?'pending':delivery.retry?'failed':'skipped',leased_until:null,next_attempt:new Date(Date.now()+60000*job.attempts).toISOString()}).eq('id',job.id).eq('state','sending').eq('leased_until',job.leased_until));
     }
     // Bound parallelism keeps slow push endpoints from exhausting the job lease.
     for(let i=0;i<jobs.length;i+=4)await Promise.all(jobs.slice(i,i+4).map(processJob));

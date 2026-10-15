@@ -1,0 +1,16 @@
+import assert from 'node:assert/strict';
+import {build} from 'esbuild';
+import {mkdir} from 'node:fs/promises';
+await mkdir('.sites-runtime/tests',{recursive:true});
+await build({entryPoints:['src/api.ts'],outfile:'.sites-runtime/tests/v1-api.mjs',bundle:true,platform:'node',format:'esm',logLevel:'silent',plugins:[{name:'isolated-auth',setup(b){b.onResolve({filter:/^@supabase\/supabase-js$/},()=>({path:'supabase-fixture',namespace:'fixture'}));b.onLoad({filter:/.*/,namespace:'fixture'},()=>({contents:`export const createClient=()=>({auth:{getSession:async()=>({data:{session:globalThis.__hiloTestSession},error:null})}});`,loader:'js'}));}}]});
+let posts=[];
+globalThis.fetch=async(path,init)=>{if(path==='/api/config')return Response.json({supabaseUrl:'https://fixture.invalid',supabaseKey:'public-fixture'});posts.push(init);return Response.json({saved:true});};
+const {api}=await import('../.sites-runtime/tests/v1-api.mjs');
+globalThis.__hiloTestSession={user:{id:'owner-a'},access_token:'fixture-token-a'};
+await api('/api/capture/save',{requestId:'fixture'},'owner-a');assert.equal(posts[0].headers.Authorization,'Bearer fixture-token-a');
+globalThis.__hiloTestSession={user:{id:'owner-b'},access_token:'fixture-token-b'};
+await assert.rejects(api('/api/capture/save',{requestId:'fixture'},'owner-a'),/Inicia sesión/);
+assert.equal(posts.length,1,'A queued idea must not be sent with another account token');
+await api('/api/capture/save',{requestId:'fixture-b'},'owner-b');assert.equal(posts[1].headers.Authorization,'Bearer fixture-token-b');
+delete globalThis.__hiloTestSession;
+console.log('V1 identity passed: account switch cannot transmit a queued idea using the new account token.');

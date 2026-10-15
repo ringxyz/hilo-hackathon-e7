@@ -57,6 +57,27 @@ export function timeToInstant(date:string,time:string,zone:string):Date {
     const represented=Date.parse(`${get("year")}-${get("month")}-${get("day")}T${get("hour")}:${get("minute")}:${get("second")}Z`);
     guess+=target-represented;
   }
-  return new Date(guess);
+  const result=new Date(guess);
+  const actual=new Intl.DateTimeFormat('en-GB',{timeZone:zone,hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).format(result);
+  if(localDate(result,zone)!==date||actual!==time)throw new Error('Esa hora no existe por el cambio horario. Elige otra hora.');
+  return result;
+}
+
+export function scheduledActivity<T extends Partial<Activity>>(a:T,defaultZone:string):T {
+  const timezone=a.timezone||defaultZone;
+  return {...a,timezone,startsAt:a.date&&a.time?timeToInstant(a.date,a.time,timezone).toISOString():null,travelMinutes:a.kind==='event'?(a.travelMinutes??30):0};
+}
+export function departureTime(a:Activity,day=a.date,defaultZone='Europe/Madrid') {
+  if(a.kind!=='event'||!day||!a.time)return null;
+  const zone=a.timezone||defaultZone,instant=new Date(+timeToInstant(day,a.time,zone)-(a.travelMinutes??30)*60000);
+  return {date:localDate(instant,zone),time:new Intl.DateTimeFormat('en-GB',{timeZone:zone,hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).format(instant)};
+}
+export function snoozeInstant(option:'10m'|'1h'|'tomorrow',now:Date,zone:string) {
+  if(option!=='tomorrow')return new Date(+now+(option==='10m'?10:60)*60000);
+  const time=new Intl.DateTimeFormat('en-GB',{timeZone:zone,hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).format(now);
+  return timeToInstant(addDays(localDate(now,zone),1),time,zone);
+}
+export function rawIdea(text:string):Partial<Activity> {
+  return {title:text.trim().slice(0,160),note:text,kind:'task',date:null,time:null,duration:20,nextStep:'',status:'pending',color:'mint',recurrence:'none',source:'hilo',reminder:false};
 }
 

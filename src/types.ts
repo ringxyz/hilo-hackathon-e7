@@ -6,13 +6,15 @@ export type Activity = {
   completedDates?: string[]; source: "hilo" | "google"; reminder: boolean;
   googleId?: string; googleEtag?: string; sync?: "pending" | "synced" | "conflict";
   estimated?: boolean; ambiguous?: string; revision?: number;
+  returnNote?: string; timezone?: string; startsAt?: string | null; travelMinutes?: number;
 };
 export type FocusSession = { activityId: string; status: "running" | "paused"; startedAt: number | null; elapsed: number; note: string; duration: number };
 export type Profile = { audience: "adult" | "teen" | "child"; age: number | null; country: string; course: string; guardianConsent: boolean; aiConsent: boolean; completed: boolean };
-export type Settings = { name: string; timezone: string; hideTimer: boolean; quietStart: string; quietEnd: string; demo: boolean; profile: Profile };
-export type GoogleStatus = { configured: boolean; connected: boolean; needsReconnect?: boolean; calendarId?: string; readCalendar?: string; lastSync?: number };
+export type Settings = { name: string; timezone: string; hideTimer: boolean; quietStart: string; quietEnd: string; demo: boolean; profile: Profile; reducedMotion?: boolean; highContrast?: boolean; fontSize?: 'small'|'medium'|'large'; language?: 'es'|'en'; calendarDismissed?:boolean };
+export type GoogleStatus = { configured: boolean; connected: boolean; needsReconnect?: boolean; calendarId?: string; readCalendar?: string; lastSync?: number; email?: string };
 export type StudySource = { title: string; url: string };
 export type StudyCard = { id: string; question: string; answer: string; example: string; sources: StudySource[]; status: "new" | "again" | "known" };
 export type StudyDay = { id: string; date: string; subject: string; title: string; topics: string[]; cards: StudyCard[]; createdAt: number; reviewed: boolean };
 export type Exam = { id: string; title: string; date: string; dayIds: string[]; createdAt: number };
-export type AppState = { activities: Activity[]; session: FocusSession | null; settings: Settings; google: GoogleStatus; voiceConfigured: boolean; aiConfigured: boolean; remindersConfigured: boolean; vapidPublicKey: string | null; authenticated: boolean; studyDays: StudyDay[]; exams: Exam[] };
+export type Reminder = { id: string; activity_id: string; occurrence: string; kind: 'appointment'|'departure'; due_at: string; state: string; acknowledged: boolean; snoozed: boolean };
+export type AppState = { ownerId?: string; reminders?: Reminder[]; activities: Activity[]; session: FocusSession | null; settings: Settings; google: GoogleStatus; voiceConfigured: boolean; aiConfigured: boolean; remindersConfigured: boolean; vapidPublicKey: string | null; authenticated: boolean; studyDays: StudyDay[]; exams: Exam[] };
