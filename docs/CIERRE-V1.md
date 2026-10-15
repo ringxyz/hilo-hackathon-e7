@@ -30,6 +30,8 @@ Cambios limitados a la lista de revisión recibida el 15 de octubre. Se mantiene
 
 Las pruebas locales del navegador usan respuestas simuladas y no modifican la demo ni cuentas reales. Las transacciones SQL prueban persistencia y aislamiento reales, y se revierten. No equivalen a una única prueba integral en un teléfono físico.
 
+Tras publicar, se comprobó además el acceso real por correo de Alex · Demo y la lectura de su Dashboard desde el Worker y Supabase. La primera carga de la cuenta abre Inicio desde arriba. No se completaron, pospusieron ni editaron actividades de la demo durante esta comprobación.
+
 ## Límites de comprobación
 
 Se han configurado las tres acciones para los push. El sistema operativo/navegador puede mostrar menos acciones nativas que las enviadas; al abrir el aviso, Hilo presenta las tres. La API permite consultar el límite mediante [Notification.maxActions](https://developer.mozilla.org/en-US/docs/Web/API/Notification/maxActions_static). No se garantiza que todos los sistemas muestren simultáneamente tres botones en la notificación del sistema.

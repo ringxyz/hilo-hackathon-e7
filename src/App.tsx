@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState, lazy, Suspense } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, lazy, Suspense } from 'react';
 import { ArrowRight, Bell, BookOpen, CalendarDays, Check, Home, Inbox, Mic, Plus, Settings2, Sun, WifiOff, X } from 'lucide-react';
 import { LanguageSelector, LegalLinks, StorageNotice, InstallApp } from './AppUtilities';
 import { tr, pick, useLanguage, getLanguage } from './i18n';
@@ -22,6 +22,7 @@ export default function App(){
  const language=useLanguage(),[state,setState]=useState<AppState|null>(null),[view,setView]=useState<View>(initialView),[loading,setLoading]=useState(true),[login,setLogin]=useState(false),[accessShown,setAccessShown]=useState(false),[busy,setBusy]=useState(false),[error,setError]=useState(''),[toast,setToast]=useState(''),[online,setOnline]=useState(navigator.onLine),[now,setNow]=useState(Date.now()),[date,setDate]=useState(localDate());
  const [capture,setCapture]=useState(false),[editing,setEditing]=useState<Activity|null>(null),[pauseNote,setPauseNote]=useState<string|null>(null),[stepEdit,setStepEdit]=useState<Activity|null>(null),[solo,setSolo]=useState(()=>sessionStorage.getItem('hilo-solo')==='true'),[hideClock,setHideClock]=useState(false),[queued,setQueued]=useState(0),[reminder,setReminder]=useState<{activity:Activity;day:string;kind:'appointment'|'departure'}|null>(null),[undo,setUndo]=useState<{id:string;date:string}|null>(null);
  const mutation=useRef(false),owner=useRef(''),initialized=useRef(false),notificationHandled=useRef(false);
+ useLayoutEffect(()=>{if(state?.ownerId)window.scrollTo({top:0,behavior:'instant'});},[state?.ownerId]);
  const apply=useCallback((s:AppState)=>{setState(s);setLogin(false);if(s.ownerId){owner.current=s.ownerId;localStorage.setItem(OWNER_KEY,s.ownerId);}if(!initialized.current){setDate(localDate(new Date(),s.settings.timezone));setHideClock(s.settings.hideTimer);initialized.current=true;}},[]);
  const refresh=useCallback(async(silent=false)=>{try{apply(await api('/api/state'));}catch(e){const message=(e as Error).message;if(message.includes(tr('Inicia sesión'))){setLogin(true);setState(null);}else if(!silent)setError(message);}finally{setLoading(false);}},[apply]);
  const syncQueue=useCallback(async()=>{if(!owner.current)return;setQueued((await queuedIdeas(owner.current)).length);if(!navigator.onLine)return;try{const n=await flushQueue(owner.current);if(n){setToast(pick('Ideas sincronizadas en Después.','Ideas synced to Later.'));await refresh(true);}}catch{/* Retain queued data until a confirmed save. */}finally{setQueued((await queuedIdeas(owner.current)).length);}},[refresh]);
