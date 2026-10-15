@@ -27,7 +27,7 @@ export default function App(){
  const syncQueue=useCallback(async()=>{if(!owner.current)return;setQueued((await queuedIdeas(owner.current)).length);if(!navigator.onLine)return;try{const n=await flushQueue(owner.current);if(n){setToast(pick('Ideas sincronizadas en Después.','Ideas synced to Later.'));await refresh(true);}}catch{/* Retain queued data until a confirmed save. */}finally{setQueued((await queuedIdeas(owner.current)).length);}},[refresh]);
  useEffect(()=>{document.documentElement.lang=language;document.title=pick('Hilo · Tu siguiente paso, a tu ritmo','Hilo · Your next step, at your own pace');},[language]);
  useEffect(()=>{const root=document.documentElement;root.dataset.fontSize=state?.settings.fontSize||'medium';root.dataset.highContrast=String(!!state?.settings.highContrast);root.dataset.reducedMotion=String(!!state?.settings.reducedMotion);},[state?.settings]);
- useEffect(()=>{sessionStorage.setItem('hilo-solo',String(solo));},[solo]);
+ useEffect(()=>{sessionStorage.setItem('hilo-solo',String(solo));if(solo)window.scrollTo({top:0,behavior:'instant'});},[solo]);
  useEffect(()=>{setHideClock(!!state?.settings.hideTimer);},[state?.settings.hideTimer]);
  useEffect(()=>{let disposed=false,unsubscribe:(()=>void)|undefined;
   const params=new URLSearchParams(location.search),hash=new URLSearchParams(location.hash.slice(1)),failed=params.get('error')||hash.get('error');
