@@ -5,7 +5,7 @@ export function localDate(now = new Date(), timezone = "Europe/Madrid") {
 }
 export function addDays(date: string, days: number) { const d = new Date(date+"T12:00:00Z"); d.setUTCDate(d.getUTCDate()+days); return d.toISOString().slice(0,10); }
 export function occursOn(a: Activity, date: string) {
-  if(!a.date || date<a.date) return false;
+  if(a.excludedDates?.includes(date)||!a.date || date<a.date) return false;
   if(a.recurrence==="daily") return true;
   if(a.recurrence==="weekly") return new Date(date+"T12:00:00Z").getUTCDay()===new Date(a.date+"T12:00:00Z").getUTCDay();
   if(a.recurrence==="annual") return date.slice(5)===a.date.slice(5);

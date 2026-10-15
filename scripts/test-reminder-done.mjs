@@ -8,12 +8,16 @@ const owner='11111111-1111-4111-8111-111111111111',raw=crypto.getRandomValues(ne
 const key=await crypto.subtle.importKey('raw',raw,'AES-GCM',false,['encrypt']);
 const connection={accessToken:'fixture-token',refreshToken:'fixture-refresh',expires:Date.now()+3600000,calendarId:'hilo-fixture',readCalendar:'read-fixture'};
 const encrypted=Buffer.from(iv).toString('base64')+'.'+Buffer.from(await crypto.subtle.encrypt({name:'AES-GCM',iv,additionalData:new TextEncoder().encode(owner)},key,new TextEncoder().encode(JSON.stringify(connection)))).toString('base64');
-const rows=[{id:'done-id',payload:{source:'google',googleId:'done-event',status:'done',reminder:true,travelMinutes:30}},{id:'pending-id',payload:{source:'google',googleId:'pending-event',status:'pending'}}];
+const rows=[{id:'done-id',payload:{source:'google',googleId:'done-event',status:'done',reminder:true,travelMinutes:30}},{id:'pending-id',payload:{source:'google',googleId:'pending-event',status:'pending',scheduleOverride:{date:'2026-10-16',time:'08:30',startsAt:'2026-10-16T06:30:00.000Z'}}}];
+rows.push({id:'moved-missing',payload:{source:'google',googleId:'old-event-outside-window',status:'pending',date:'2026-10-14',scheduleOverride:{date:'2026-10-16',time:'08:30',startsAt:'2026-10-16T06:30:00.000Z'}}});
 const writes=[],methods=[];
 const repo={userId:owner,env:{TOKEN_ENCRYPTION_KEY:Buffer.from(raw).toString('base64')},settings:async()=>({timezone:'Europe/Madrid'}),rows:async()=>rows,session:async()=>null,db:{from(table){return {select(){return this;},eq(){return this;},maybeSingle:async()=>({data:{encrypted},error:null}),upsert:async value=>{writes.push({table,value});return {data:null,error:null};}};}}};
-globalThis.fetch=async(url,init)=>{assert.ok(String(url).includes('/calendar/v3/calendars/read-fixture/events?'));methods.push(init.method);return Response.json({items:rows.map(r=>({id:r.payload.googleId,summary:'Fixture',start:{dateTime:'2026-10-14T19:00:00+02:00'},end:{dateTime:'2026-10-14T19:30:00+02:00'},etag:'fixture-etag'}))});};
+globalThis.fetch=async(url,init)=>{assert.ok(String(url).includes('/calendar/v3/calendars/read-fixture/events?'));methods.push(init.method);return Response.json({items:rows.filter(r=>r.id!=='moved-missing').map(r=>({id:r.payload.googleId,summary:'Fixture',start:{dateTime:'2026-10-14T19:00:00+02:00'},end:{dateTime:'2026-10-14T19:30:00+02:00'},etag:'fixture-etag'}))});};
 await sync(repo,'2026-10-14');
 assert.equal(writes.find(w=>w.table==='hilo_activities'&&w.value.id==='done-id').value.payload.status,'done');
 assert.equal(writes.find(w=>w.table==='hilo_activities'&&w.value.id==='pending-id').value.payload.status,'pending');
+assert.equal(writes.find(w=>w.table==='hilo_activities'&&w.value.id==='pending-id').value.payload.time,'08:30');
+assert.equal(writes.find(w=>w.table==='hilo_activities'&&w.value.id==='pending-id').value.payload.date,'2026-10-16');
+assert.equal(writes.filter(w=>w.table==='hilo_activities').length,2,'A local reschedule outside the remote window must be retained');
 assert.deepEqual(methods,['GET'],'Completing an imported event must not write to Google Calendar');
 console.log('Reminder completion passed: Google sync preserves local completion without modifying the external event.');

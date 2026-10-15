@@ -13,14 +13,7 @@ update public.hilo_sessions set payload=payload||'{"elapsed":125}' where owner=a
 select public.hilo_focus('pause',null,'Second paragraph, line 3');
 select public.hilo_focus('start',current_setting('hilo.activity')::uuid);
 select set_config('hilo.persistence_results',(jsonb_build_object('capture_count',(select count(*) from public.hilo_activities),'original_text_preserved',(select payload->>'note'='Original captured text' from public.hilo_activities),'session_note',(select payload->>'note'='Second paragraph, line 3' from public.hilo_sessions),'elapsed_retained',(select (payload->>'elapsed')::int>=125 from public.hilo_sessions),'next_step_retained',(select payload->>'nextStep'='Read one paragraph for 2 minutes' from public.hilo_activities),'other_profile_invisible',(select count(*)=0 from public.hilo_profiles where id=current_setting('hilo.other_user')::uuid)))::text,true);
-select public.hilo_reminder_action(current_setting('hilo.snooze')::uuid,current_setting('hilo.activity')::uuid,(now() at time zone 'Europe/Madrid')::date,'departure','10m');
-select set_config('hilo.first_due',public.hilo_own_reminders()->0->>'due_at',true);
-select public.hilo_reminder_action(current_setting('hilo.snooze')::uuid,current_setting('hilo.activity')::uuid,(now() at time zone 'Europe/Madrid')::date,'departure','10m');
-select set_config('hilo.snooze_10m_results',(jsonb_build_object('ten_minutes',abs(extract(epoch from ((public.hilo_own_reminders()->0->>'due_at')::timestamptz-now()))-600)<2,'idempotent',(public.hilo_own_reminders()->0->>'due_at')=current_setting('hilo.first_due'),'appointment_unchanged',(select payload->>'time'='19:30' from public.hilo_activities)))::text,true);
-select public.hilo_reminder_action(gen_random_uuid(),current_setting('hilo.activity')::uuid,(now() at time zone 'Europe/Madrid')::date,'departure','1h');
-select set_config('hilo.snooze_hour_results',(jsonb_build_object('one_hour',abs(extract(epoch from ((public.hilo_own_reminders()->0->>'due_at')::timestamptz-now()))-3600)<2))::text,true);
-select public.hilo_reminder_action(gen_random_uuid(),current_setting('hilo.activity')::uuid,(now() at time zone 'Europe/Madrid')::date,'departure','tomorrow');
-select set_config('hilo.snooze_tomorrow_results',(jsonb_build_object('tomorrow_local',((public.hilo_own_reminders()->0->>'due_at')::timestamptz at time zone 'Europe/Madrid')::date=(now() at time zone 'Europe/Madrid')::date+1))::text,true);
+-- Rescheduling is verified in scripts/test-reschedule.sql (V1 follow-up).
 select public.hilo_reminder_action(gen_random_uuid(),current_setting('hilo.activity')::uuid,(now() at time zone 'Europe/Madrid')::date,'appointment','start');
 select set_config('hilo.start_results',(jsonb_build_object('handled_reminders_hidden',public.hilo_own_reminders()='[]'::jsonb,'focus_running',(select payload->>'status'='running' from public.hilo_sessions)))::text,true);
 do $$begin
@@ -30,5 +23,5 @@ do $$begin
 end $$;
 reset role;
 select set_config('hilo.schedule_results',(jsonb_build_object('two_tombstones',(select count(*)=2 and bool_and(acknowledged) from public.hilo_push_jobs where owner=current_setting('hilo.test_user')::uuid),'dst_before',('2026-10-24 09:00'::timestamp at time zone 'Europe/Madrid')='2026-10-24 07:00Z'::timestamptz,'dst_after',('2026-10-25 09:00'::timestamp at time zone 'Europe/Madrid')='2026-10-25 08:00Z'::timestamptz,'dst_fold_later',('2026-10-25 02:30'::timestamp at time zone 'Europe/Madrid')='2026-10-25 01:30Z'::timestamptz))::text,true);
-select jsonb_build_object('persistence',current_setting('hilo.persistence_results')::jsonb,'ten_minutes',current_setting('hilo.snooze_10m_results')::jsonb,'hour',current_setting('hilo.snooze_hour_results')::jsonb,'tomorrow',current_setting('hilo.snooze_tomorrow_results')::jsonb,'start',current_setting('hilo.start_results')::jsonb,'schedule',current_setting('hilo.schedule_results')::jsonb,'cross_account_rpc_denied',current_setting('hilo.cross_account')::boolean) as checks;
+select jsonb_build_object('persistence',current_setting('hilo.persistence_results')::jsonb,'start',current_setting('hilo.start_results')::jsonb,'schedule',current_setting('hilo.schedule_results')::jsonb,'cross_account_rpc_denied',current_setting('hilo.cross_account')::boolean) as checks;
 rollback;

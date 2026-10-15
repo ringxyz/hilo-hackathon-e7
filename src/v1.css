@@ -57,3 +57,20 @@ button:not(.sr-only),summary,.text-button,.icon-button,.round-check,.quick-dates
 .compact-activity>.round-check,.compact-activity>.icon-button{min-width:44px;width:44px}.legal-links a{min-height:44px;display:inline-flex;align-items:center}
 
 .enter-solo{margin:20px 14px 0 0}.solo-caption{font-weight:500}
+
+/* Sequential Dashboard: preserve the requested order on every viewport. */
+.dashboard-grid{display:flex;flex-direction:column;gap:24px;max-width:900px}
+.dashboard-grid>section{width:100%;min-width:0}
+.profile-card-heading{display:flex;align-items:center;justify-content:space-between;gap:16px;font-size:.9375rem}
+.profile-card-heading h2{font-size:1.25rem;font-weight:800}.profile-card-heading p{color:var(--muted);margin-top:4px}
+.profile-card form{margin-top:24px}.profile-card .language-select{margin:14px 0;display:flex;justify-content:space-between;gap:12px}
+.profile-card form>.checkbox-label{margin:14px 0}.profile-card-heading .text-button{min-width:88px}
+.touch-icon{display:inline-flex;align-items:center;justify-content:center;min-width:44px;min-height:44px;flex-shrink:0}
+.preview-item{min-height:52px}.preview-item>svg{box-sizing:content-box;min-width:17px;min-height:17px;padding:13.5px;flex-shrink:0}
+.text-button,.icon-button,.round-check,summary,.language-select select{min-width:44px;min-height:44px}
+.compact-activity{flex-wrap:wrap}.compact-activity>.snooze-options{flex-basis:100%;margin:10px 0 0}
+.snooze-options>.button{min-width:100px;min-height:48px;font-size:.8125rem;padding:10px 12px}
+.modal .snooze-options{margin-top:16px}.access-panel{width:min(420px,100%);margin-top:12px}.access-panel h2{font-size:1.25rem;margin:0 0 16px}.access-panel .email-login{margin-top:10px}.welcome>.existing-login{font-size:.8125rem}
+@media(max-width:760px){.dashboard-grid{gap:20px}.profile-card-heading{font-size:.8125rem}.snooze-options{gap:8px}.profile-card .audience-options{grid-template-columns:1fr}.profile-card .form-grid{grid-template-columns:1fr}.profile-card-heading .text-button{min-width:72px}.profile-card .language-select{flex-wrap:wrap}}
+
+button:not(.sr-only){min-width:44px}

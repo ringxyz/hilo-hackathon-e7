@@ -456,3 +456,4 @@ Object.assign(english,{
 });
 
 Object.assign(english,{'Inicio':'Home','Esa hora no existe por el cambio horario. Elige otra hora.':'This time does not exist because the clocks change. Choose another time.','Elige una actividad pendiente.':'Choose an unfinished activity.'});
+Object.assign(english,{'Autorización cancelada. Pulsa Conectar de nuevo.':'Authorisation cancelled. Select Connect again.','Autorización caducada. Pulsa Conectar de nuevo.':'Authorisation expired. Select Connect again.'});

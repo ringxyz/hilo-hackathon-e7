@@ -4,7 +4,7 @@ import {mkdir,readFile} from 'node:fs/promises';
 await mkdir('.sites-runtime/tests',{recursive:true});
 await build({entryPoints:['src/domain.ts'],outfile:'.sites-runtime/tests/v1-domain.mjs',bundle:true,platform:'node',format:'esm',logLevel:'silent'});
 await build({entryPoints:['worker/repo.ts'],outfile:'.sites-runtime/tests/v1-schema.mjs',bundle:true,platform:'node',format:'esm',logLevel:'silent'});
-const {timeToInstant,scheduledActivity,departureTime,rawIdea,snoozeInstant,pauseSession,elapsedSeconds}=await import('../.sites-runtime/tests/v1-domain.mjs');
+const {timeToInstant,scheduledActivity,departureTime,rawIdea,snoozeInstant,pauseSession,elapsedSeconds,occursOn}=await import('../.sites-runtime/tests/v1-domain.mjs');
 const {activitySchema}=await import('../.sites-runtime/tests/v1-schema.mjs');
 const raw='  Idea original\n'+ 'ñ '.repeat(2900);
 const idea=rawIdea(raw);assert.equal(idea.note,raw);assert.equal(idea.date,null);assert.equal(idea.time,null);assert.equal(idea.duration,20);assert.equal(idea.title.length,160);assert.equal(activitySchema.parse(idea).note,raw);
@@ -26,4 +26,5 @@ const reloaded=JSON.parse(JSON.stringify(paused));assert.equal(elapsedSeconds(re
 assert.equal(elapsedSeconds({...reloaded,status:'running',startedAt:200000},220000),125);
 assert.equal(activitySchema.safeParse({...idea,travelMinutes:-1}).success,false);assert.equal(activitySchema.safeParse({...idea,travelMinutes:241}).success,false);
 assert.equal(activitySchema.safeParse({...idea,timezone:'invented/zone'}).success,false);
+const series={...idea,date:'2026-10-15',recurrence:'daily',excludedDates:['2026-10-15']};assert.equal(occursOn(series,'2026-10-15'),false);assert.equal(occursOn(series,'2026-10-16'),true);
 console.log('V1 checks passed: full raw text, local date vs UTC, fixed IANA zone, Madrid DST/fold/gap, departure across midnight, snoozes and pause/reload/resume.');

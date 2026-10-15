@@ -1,6 +1,6 @@
 # Hilo · A tu ritmo
 
-App para guardar pendientes, recuperar el siguiente paso y repasar lo aprendido. V1 para el piloto familiar y el hackatón. Registro de cambios y límites de verificación: [V1-VERIFICACION.md](docs/V1-VERIFICACION.md).
+App para guardar pendientes, recuperar el siguiente paso y repasar lo aprendido. V1 para el piloto familiar y el hackatón. Revisión más reciente: [CIERRE-V1.md](docs/CIERRE-V1.md). Registro anterior: [V1-VERIFICACION.md](docs/V1-VERIFICACION.md).
 
 ## Stack
 

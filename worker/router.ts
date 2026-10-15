@@ -41,8 +41,11 @@ export async function handle(request:Request,env:Env):Promise<Response>{
  }
  if(path==='/api/reminder/action'){
   const input=z.object({requestId:z.string().uuid(),activityId:z.string().uuid(),occurrence:date,kind:z.enum(['appointment','departure']),action:z.enum(['10m','1h','tomorrow','start','done'])}).parse(b);
-  const current=await repo.session();if(input.action==='start'&&current?.status==='running'&&current.activityId!==input.activityId)throw new ApiError('Pausa la actividad actual antes de cambiar.',409);
-  dbResult(await repo.db.rpc('hilo_reminder_action',{request_id:input.requestId,activity_id:input.activityId,occurrence:input.occurrence,kind:input.kind,action:input.action}));return result();
+  const a=await repo.activity(input.activityId),target=a.rescheduledTo?.[input.occurrence],resolved=target?await repo.activity(target):a;
+  const current=await repo.session();if(input.action==='start'&&current?.status==='running'&&current.activityId!==resolved.id)throw new ApiError('Pausa la actividad actual antes de cambiar.',409);
+  const params={request_id:input.requestId,activity_id:input.activityId,occurrence:input.occurrence,kind:input.kind,action:input.action};
+  if(['10m','1h','tomorrow'].includes(input.action)){const rescheduled=dbResult(await repo.db.rpc('hilo_reschedule_reminder',params));return Response.json({...await repo.state(),rescheduled});}
+  dbResult(await repo.db.rpc('hilo_reminder_action',{...params,activity_id:resolved.id,occurrence:target?resolved.date:input.occurrence}));return result();
  }
  if(path==='/api/activity/reminder'){
   const input=z.object({id:z.string().uuid(),revision:z.number().int(),reminder:z.boolean(),travelMinutes:z.number().int().min(0).max(240)}).parse(b),a=await repo.activity(input.id);

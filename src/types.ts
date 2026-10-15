@@ -3,7 +3,7 @@ export type Activity = {
   time: string | null; duration: number; nextStep: string; note: string;
   status: "pending" | "done"; color: "pink" | "mint" | "peach" | "blue";
   recurrence: "none" | "daily" | "weekly" | "annual";
-  completedDates?: string[]; source: "hilo" | "google"; reminder: boolean;
+  excludedDates?:string[]; rescheduledTo?:Record<string,string>; scheduleOverride?:{date:string;time:string;startsAt:string}; completedDates?: string[]; source: "hilo" | "google"; reminder: boolean;
   googleId?: string; googleEtag?: string; sync?: "pending" | "synced" | "conflict";
   estimated?: boolean; ambiguous?: string; revision?: number;
   returnNote?: string; timezone?: string; startsAt?: string | null; travelMinutes?: number;
@@ -17,4 +17,4 @@ export type StudyCard = { id: string; question: string; answer: string; example:
 export type StudyDay = { id: string; date: string; subject: string; title: string; topics: string[]; cards: StudyCard[]; createdAt: number; reviewed: boolean };
 export type Exam = { id: string; title: string; date: string; dayIds: string[]; createdAt: number };
 export type Reminder = { id: string; activity_id: string; occurrence: string; kind: 'appointment'|'departure'; due_at: string; state: string; acknowledged: boolean; snoozed: boolean };
-export type AppState = { ownerId?: string; reminders?: Reminder[]; activities: Activity[]; session: FocusSession | null; settings: Settings; google: GoogleStatus; voiceConfigured: boolean; aiConfigured: boolean; remindersConfigured: boolean; vapidPublicKey: string | null; authenticated: boolean; studyDays: StudyDay[]; exams: Exam[] };
+export type AppState = { ownerId?: string; rescheduled?:{id:string;date:string;time:string;adjusted:boolean;option:'10m'|'1h'|'tomorrow'}; reminders?: Reminder[]; activities: Activity[]; session: FocusSession | null; settings: Settings; google: GoogleStatus; voiceConfigured: boolean; aiConfigured: boolean; remindersConfigured: boolean; vapidPublicKey: string | null; authenticated: boolean; studyDays: StudyDay[]; exams: Exam[] };
