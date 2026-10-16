@@ -6,11 +6,12 @@ export type Activity = {
   excludedDates?:string[]; rescheduledTo?:Record<string,string>; scheduleOverride?:{date:string;time:string;startsAt:string}; completedDates?: string[]; source: "hilo" | "google"; reminder: boolean;
   googleId?: string; googleEtag?: string; sync?: "pending" | "synced" | "conflict";
   estimated?: boolean; ambiguous?: string; revision?: number;
-  returnNote?: string; timezone?: string; startsAt?: string | null; travelMinutes?: number;
+  returnNote?: string; timezone?: string; startsAt?: string | null; travelMinutes?: number; purpose?: 'study';
 };
 export type FocusSession = { activityId: string; status: "running" | "paused"; startedAt: number | null; elapsed: number; note: string; duration: number };
-export type Profile = { audience: "adult" | "teen" | "child"; age: number | null; country: string; course: string; guardianConsent: boolean; aiConsent: boolean; completed: boolean };
-export type Settings = { name: string; timezone: string; hideTimer: boolean; quietStart: string; quietEnd: string; demo: boolean; profile: Profile; reducedMotion?: boolean; highContrast?: boolean; fontSize?: 'small'|'medium'|'large'; language?: 'es'|'en'; calendarDismissed?:boolean };
+export type Profile = { audience: "adult" | "teen" | "child"; age: number | null; country: string; course: string; guardianConsent: boolean; aiConsent: boolean; completed: boolean; studying?: boolean; subjects?: string; studyLevel?: 'primary'|'secondary'|'university'|'other'; useCases?: ('work'|'home'|'personal'|'other')[] };
+export type ReminderPreferences = { departure: boolean; resume: boolean; study: boolean };
+export type Settings = { name: string; timezone: string; hideTimer: boolean; quietStart: string; quietEnd: string; demo: boolean; profile: Profile; reducedMotion?: boolean; highContrast?: boolean; fontSize?: 'small'|'medium'|'large'; language?: 'es'|'en'; calendarDismissed?:boolean; defaultTravelMinutes?:number; reminderPreferences?:ReminderPreferences; onboardingVersion?:number };
 export type GoogleStatus = { configured: boolean; connected: boolean; needsReconnect?: boolean; calendarId?: string; readCalendar?: string; lastSync?: number; email?: string };
 export type StudySource = { title: string; url: string };
 export type StudyCard = { id: string; question: string; answer: string; example: string; sources: StudySource[]; status: "new" | "again" | "known" };

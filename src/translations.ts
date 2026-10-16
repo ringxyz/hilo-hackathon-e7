@@ -1,5 +1,11 @@
 // Spanish is the source language. User-authored activities and study content are never translated implicitly.
 export const english: Record<string,string> = Object.fromEntries(`
+Tu correo no está en la lista de prueba de Hilo. Pide acceso para probar.|||Your email is not on the Hilo test list. Ask for access to try it.
+No se pudo comprobar el acceso a la prueba. Inténtalo de nuevo.|||Could not check access to the pilot. Please try again.
+Completa los pasos Conocerme y Tu día a día.|||Complete About me and Your everyday life.
+Indica qué estás estudiando y en qué nivel.|||Enter what you are studying and at what level.
+Elige para qué quieres usar Hilo.|||Choose what you want to use Hilo for.
+Confirma el día de esta actividad.|||Confirm the day for this activity.
 Ahora|||Now
 Agenda|||Planner
 Repaso|||Study

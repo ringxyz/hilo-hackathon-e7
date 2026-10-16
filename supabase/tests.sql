@@ -4,6 +4,8 @@ create temporary table hilo_qa_ids(a uuid,b uuid,activity uuid,capture uuid,extr
 insert into hilo_qa_ids values(gen_random_uuid(),gen_random_uuid(),gen_random_uuid(),gen_random_uuid(),gen_random_uuid());
 grant select on hilo_qa_ids to authenticated,anon;
 insert into auth.users(id,email) select a,'hilo-qa-a-'||a||'@example.invalid' from hilo_qa_ids union all select b,'hilo-qa-b-'||b||'@example.invalid' from hilo_qa_ids;
+update auth.users set email_confirmed_at=now() where id in(select a from hilo_qa_ids union all select b from hilo_qa_ids);
+insert into hilo_private.trial_emails(email) select email from auth.users where id in(select a from hilo_qa_ids union all select b from hilo_qa_ids);
 insert into public.hilo_profiles(id,settings) select a,'{"timezone":"UTC","quietStart":"00:00","quietEnd":"00:00"}'::jsonb from hilo_qa_ids union all select b,'{}'::jsonb from hilo_qa_ids;
 insert into public.hilo_activities(id,owner,payload) select activity,a,jsonb_build_object('id',activity,'source','hilo','title','QA only','status','pending','date',to_char(now() at time zone 'UTC','YYYY-MM-DD'),'time',to_char((now()-interval '1 minute') at time zone 'UTC','HH24:MI'),'recurrence','daily','reminder',true) from hilo_qa_ids;
 insert into public.hilo_study_days(id,owner,payload) select gen_random_uuid(),a,'{"title":"QA A"}'::jsonb from hilo_qa_ids union all select gen_random_uuid(),b,'{"title":"QA B"}'::jsonb from hilo_qa_ids;

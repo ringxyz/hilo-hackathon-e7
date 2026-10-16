@@ -2,6 +2,9 @@
 begin;
 select set_config('hilo.done_owner',gen_random_uuid()::text,true),set_config('hilo.done_other',gen_random_uuid()::text,true),set_config('hilo.done_event',gen_random_uuid()::text,true),set_config('hilo.done_series',gen_random_uuid()::text,true),set_config('hilo.done_request',gen_random_uuid()::text,true);
 insert into auth.users(id,aud,role) values(current_setting('hilo.done_owner')::uuid,'authenticated','authenticated'),(current_setting('hilo.done_other')::uuid,'authenticated','authenticated');
+-- Confirm and allow only this transaction's synthetic identities.
+update auth.users set email='fixture-'||id||'@hilo.invalid',email_confirmed_at=now() where id in (current_setting('hilo.done_owner')::uuid,current_setting('hilo.done_other')::uuid);
+insert into hilo_private.trial_emails(email) select email from auth.users where id in (current_setting('hilo.done_owner')::uuid,current_setting('hilo.done_other')::uuid);
 insert into public.hilo_profiles(id,settings) values(current_setting('hilo.done_owner')::uuid,'{"timezone":"Europe/Madrid"}'),(current_setting('hilo.done_other')::uuid,'{}');
 insert into public.hilo_activities(id,owner,payload) values
 (current_setting('hilo.done_event')::uuid,current_setting('hilo.done_owner')::uuid,jsonb_build_object('title','Isolated Google appointment','source','google','googleId','fixture-only','status','pending','kind','event','date',current_date-1,'time','19:00','timezone','Europe/Madrid','travelMinutes',30,'duration',20,'reminder',true,'recurrence','none')),

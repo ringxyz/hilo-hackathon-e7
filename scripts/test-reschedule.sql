@@ -2,6 +2,9 @@ begin;
 -- Use with BEGIN/ROLLBACK. No push delivery; isolated account and synthetic activities.
 select set_config('hilo.res_owner',gen_random_uuid()::text,true),set_config('hilo.res_other',gen_random_uuid()::text,true),set_config('hilo.res_event',gen_random_uuid()::text,true),set_config('hilo.res_series',gen_random_uuid()::text,true),set_config('hilo.res_request',gen_random_uuid()::text,true);
 insert into auth.users(id,aud,role) values(current_setting('hilo.res_owner')::uuid,'authenticated','authenticated'),(current_setting('hilo.res_other')::uuid,'authenticated','authenticated');
+-- Confirm and allow only this transaction's synthetic identities.
+update auth.users set email='fixture-'||id||'@hilo.invalid',email_confirmed_at=now() where id in (current_setting('hilo.res_owner')::uuid,current_setting('hilo.res_other')::uuid);
+insert into hilo_private.trial_emails(email) select email from auth.users where id in (current_setting('hilo.res_owner')::uuid,current_setting('hilo.res_other')::uuid);
 insert into public.hilo_profiles(id,settings) values(current_setting('hilo.res_owner')::uuid,'{"timezone":"Europe/Madrid","quietStart":"00:00","quietEnd":"00:00"}'),(current_setting('hilo.res_other')::uuid,'{}');
 insert into public.hilo_activities(id,owner,payload) values
 (current_setting('hilo.res_event')::uuid,current_setting('hilo.res_owner')::uuid,jsonb_build_object('title','Reschedule fixture','source','google','googleId','fixture-only','status','pending','kind','event','date',current_date-1,'time','19:00','timezone','Europe/Madrid','travelMinutes',30,'duration',20,'reminder',true,'recurrence','none')),

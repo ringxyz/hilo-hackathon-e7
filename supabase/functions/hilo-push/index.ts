@@ -27,6 +27,8 @@ Deno.serve(async request=>{
     const config=result(await db.rpc('hilo_push_config'));
     const cron=await equalSecret(token,config.cronSecret||'');let userId:string|null=null;
     if(!cron){const {data,error}=await db.auth.getUser(token);if(error||!data.user)return json({error:'Unauthorized'},401);userId=data.user.id;
+      const caller=createClient(Deno.env.get('SUPABASE_URL')!,Deno.env.get('SUPABASE_ANON_KEY')||Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,{global:{headers:{Authorization:'Bearer '+token}},auth:{persistSession:false,autoRefreshToken:false}});
+      if(result(await caller.rpc('hilo_trial_access'))!==true)return json({error:'Tu correo no está en la lista de prueba de Hilo. Pide acceso para probar.'},403);
       const body=await request.json().catch(()=>null);if(body?.test!==true)return json({error:'Forbidden'},403);
       if(!result(await db.rpc('hilo_allow_push_test',{user_id:userId})))return json({error:'Test limit reached'},429);
     }
@@ -38,7 +40,9 @@ Deno.serve(async request=>{
       const current=result(await db.from('hilo_activities').select('payload,revision').eq('id',job.activity_id).eq('owner',job.owner).maybeSingle());
       const profile=result(await db.from('hilo_profiles').select('settings').eq('id',job.owner).maybeSingle());
       const quiet=profile?result(await db.rpc('hilo_is_quiet',{settings:profile.settings,instant:new Date().toISOString()})):true;
-      if(!current||quiet||current.revision!==job.revision||!current.payload.reminder||current.payload.status!=='pending'||current.payload.completedDates?.includes(job.occurrence)){
+      const preferences=profile?.settings?.reminderPreferences;
+      const optedOut=job.kind==='departure'?preferences?.departure===false:current?.payload.purpose==='study'?preferences?.study===false:current?.payload.kind==='task'&&preferences?.resume===false;
+      if(!current||quiet||optedOut||current.revision!==job.revision||!current.payload.reminder||current.payload.status!=='pending'||current.payload.completedDates?.includes(job.occurrence)){
         result(await db.from('hilo_push_jobs').update({state:'missed'}).eq('id',job.id).eq('state','sending').eq('leased_until',job.leased_until));return;
       }
       const lease=result(await db.from('hilo_push_jobs').select('state,leased_until').eq('id',job.id).single());if(lease.state!=='sending'||lease.leased_until!==job.leased_until)return;

@@ -1,6 +1,6 @@
 # Hilo v1.0 · A tu ritmo
 
-App para guardar pendientes, recuperar el siguiente paso y repasar lo aprendido. V1 para el piloto familiar y el hackatón. Revisión más reciente: [CIERRE-V1.md](docs/CIERRE-V1.md). Registro anterior: [V1-VERIFICACION.md](docs/V1-VERIFICACION.md).
+App para guardar pendientes, recuperar el siguiente paso y repasar lo aprendido. V1 para el piloto familiar y el hackatón. Revisión más reciente: [INICIO-LIMPIO-V1.md](docs/INICIO-LIMPIO-V1.md), con nuevo inicio, onboarding y acceso privado preparados en código; publicación pendiente. Cierre publicado anterior: [CIERRE-V1.md](docs/CIERRE-V1.md).
 
 **V1 — 19 de octubre de 2026**. Verificación y cierre real: 15/10/2026. [App pública](https://hilo-tu-siguiente-paso.waikastudios.chatgpt.site/) · [Documentación técnica](https://docs.google.com/document/d/1YKbDPxQpC3I6OQw4LRvVIahstGaeHNXuuor28Eo0cW4/edit) · [Historial de prompts](https://docs.google.com/document/d/1ModC2RSVul3quD_H7kcXAqlkYZdT8S32DlngnLhiGsY/edit) · [Carpeta de entrega](https://drive.google.com/drive/folders/142ApUa4HOPODI5dgiiuWmM3lLzOXUjcw). Los dos MP4 finales de 120 s, la voz, el guion y seis capturas V1 están compartidos por enlace. [Índice, verificaciones y checklist de entrega](docs/ENTREGA-V1.md). El formulario oficial sigue pendiente de envío.
 
@@ -10,20 +10,22 @@ React 19 + Vite 8 + TypeScript + Tailwind 4. API en Cloudflare Worker y PostgreS
 
 ## Recorridos
 
-- Entrada con Google mediante Supabase. Onboarding de dos pasos: adulto, adolescente o niño acompañado; ejemplos adaptados e IA opcional.
+- Entrada con Google mediante Supabase y lista privada de correos de prueba. Onboarding nuevo de cinco pasos: perfil e idioma, contexto de estudio/uso, Calendar opcional, avisos opcionales y preferencias finales. Los perfiles ya completados entran directamente.
 - Entrada por correo y contraseña para cuentas de evaluación previamente creadas. La muestra del jurado se describe en docs/DEMO-JURADO.md.
-- Inicio: Conóceme, Google Calendar, punto de regreso, hasta tres actividades de Hoy, dos ideas de Después y acceso al repaso.
-- Cuéntamelo: escritura o dictado, guardado directo en Después y revisión opcional con IA. La cola local reintenta con la misma clave y la misma cuenta.
+- Inicio: saludo pequeño, «Cuéntame tu día», explicación breve, Ver mi día, Ajustes y un punto de regreso compacto. Guardar idea queda disponible sin competir con la acción principal.
+- Cuéntamelo: escritura o dictado, propuesta compacta según el perfil, revisión antes de guardar y guardado directo en Después. Las actividades sin hora van a Después. La cola local reintenta con la misma clave y la misma cuenta.
 - Ahora y Solo esto: tarea activa, siguiente paso, temporizador opcional, pausa con nota y retorno. Después permite pasar una idea a Hoy en un toque.
 - Agenda: citas, desplazamiento, aviso independiente de salida, posponer actividad y aviso 10 minutos/1 hora/mañana, repeticiones y horario de silencio.
 - Repaso: relato de clase, confirmación de temas, búsqueda de fuentes, fichas por día y agrupación para examen. Respuestas editables y estado de práctica.
-- Ajustes: perfil, consentimiento, zona horaria, reloj, reducción de movimiento, contraste, tamaño de letra, Google Calendar, avisos por dispositivo, invitaciones, exportación y borrado de datos propios.
+- Ajustes: repetir configuración, perfil, consentimiento, zona horaria, desplazamiento por defecto, tipos de avisos y silencio, reloj, reducción de movimiento, contraste, tamaño de letra, Google Calendar, avisos por dispositivo, invitaciones, exportación y borrado de datos propios.
 
 La captura de texto funciona sin conexión después de haber abierto Hilo con una cuenta: se guarda en IndexedDB y se sincroniza al volver a abrir Hilo con conexión y la misma cuenta. El resto de las operaciones necesita red. Hilo no almacena audio. SpeechRecognition o el teclado convierten la voz en texto; Anthropic recibe texto. La entrega de notificaciones requiere prueba en cada dispositivo.
 
 ## Desarrollo y pruebas
 
 Requiere Node.js 22.13+. Configurar .dev.vars con los nombres de .env.example. Aplicar las migraciones de supabase/migrations/ y preparar OAuth según docs/CONFIGURACION.md.
+
+En un entorno nuevo, poblar `hilo_private.trial_emails` de forma privada después de `clean_home_trial_access` y antes de `enforce_trial_access`. Activar el hook `Before User Created` con `public.hilo_before_user_created`. La lista y su mantenimiento se explican en [INICIO-LIMPIO-V1.md](docs/INICIO-LIMPIO-V1.md); no se incluyen correos personales en el repositorio.
 
 Comandos: npm ci; npm run build. En dos terminales, npm run dev:api y npm run dev. Abrir http://127.0.0.1:5173.
 

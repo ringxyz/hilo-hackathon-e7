@@ -2,6 +2,9 @@
 begin;
 select set_config('hilo.test_user',gen_random_uuid()::text,true),set_config('hilo.other_user',gen_random_uuid()::text,true),set_config('hilo.activity',gen_random_uuid()::text,true),set_config('hilo.request',gen_random_uuid()::text,true),set_config('hilo.snooze',gen_random_uuid()::text,true),set_config('hilo.foreign_activity',gen_random_uuid()::text,true);
 insert into auth.users(id,aud,role) values(current_setting('hilo.test_user')::uuid,'authenticated','authenticated'),(current_setting('hilo.other_user')::uuid,'authenticated','authenticated');
+-- Confirm and allow only this transaction's synthetic identities.
+update auth.users set email='fixture-'||id||'@hilo.invalid',email_confirmed_at=now() where id in (current_setting('hilo.test_user')::uuid,current_setting('hilo.other_user')::uuid);
+insert into hilo_private.trial_emails(email) select email from auth.users where id in (current_setting('hilo.test_user')::uuid,current_setting('hilo.other_user')::uuid);
 insert into public.hilo_profiles(id,settings) values(current_setting('hilo.test_user')::uuid,'{"timezone":"Europe/Madrid","quietStart":"22:00","quietEnd":"08:00"}'),(current_setting('hilo.other_user')::uuid,'{}');
 insert into public.hilo_activities(id,owner,payload) values(current_setting('hilo.foreign_activity')::uuid,current_setting('hilo.other_user')::uuid,'{"title":"Other isolated account","status":"pending","duration":20}');
 select set_config('request.jwt.claim.sub',current_setting('hilo.test_user'),true);
