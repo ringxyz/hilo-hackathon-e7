@@ -1,4 +1,5 @@
 import { tr, locale, pick } from './i18n';
+import { transcriptFromResults } from './speech-transcript';
 import { useEffect, useRef, useState } from 'react';
 import { Mic, Square } from 'lucide-react';
 
@@ -13,8 +14,8 @@ export function VoiceInput({value,onChange,disabled=false,onRecording}:{value:st
     const Speech=(window as any).SpeechRecognition||(window as any).webkitSpeechRecognition;
     if(!Speech){setMessage(tr("Este navegador no ofrece dictado. Puedes usar el micrófono del teclado del móvil o escribir aquí."));return;}
     setMessage('');base.current=value.trim()?value.trim()+'\n':'';cancelled.current=false;
-    const r=new Speech();voice.current=r;r.lang=locale();r.continuous=true;r.interimResults=true;
-    r.onresult=(event:any)=>{let text='';for(let i=0;i<event.results.length;i++)text+=event.results[i][0].transcript+' ';if(alive.current&&!cancelled.current)change.current((base.current+text.trim()).slice(0,6000));};
+    const r=new Speech();voice.current=r;r.lang=locale();r.continuous=true;r.interimResults=false;
+    r.onresult=(event:any)=>{const text=transcriptFromResults(event.results);if(alive.current&&!cancelled.current)change.current((base.current+text).slice(0,6000));};
     r.onerror=(event:any)=>{if(alive.current&&event.error!=='aborted')setMessage(event.error==='not-allowed'?tr("El micrófono no tiene permiso. Puedes activarlo en el navegador o escribir."):tr("El dictado se ha interrumpido. Revisa el texto y continúa cuando quieras."));};
     r.onend=()=>{clear();if(alive.current){setRecording(false);status.current?.(false);}};
     try{r.start();setSeconds(0);setRecording(true);status.current?.(true);timer.current=setInterval(()=>setSeconds(s=>s+1),1000);limit.current=setTimeout(()=>r.stop(),180000);}catch{setMessage(tr("No se pudo abrir el micrófono. Puedes seguir escribiendo."));}
