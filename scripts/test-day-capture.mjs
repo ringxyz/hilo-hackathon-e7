@@ -1,0 +1,10 @@
+import { build } from 'esbuild';
+import assert from 'node:assert/strict';
+await build({entryPoints:['src/day-capture.ts'],outfile:'.sites-runtime/tests/day-capture.mjs',bundle:true,platform:'node',format:'esm'});
+const {recommendFirstTaskForToday}=await import('../.sites-runtime/tests/day-capture.mjs');
+const tasks=[{id:'a',kind:'task',date:null,time:null,title:'Llamar al colegio'},{id:'b',kind:'task',date:null,time:null,title:'Comprar fruta'}];
+const organized=recommendFirstTaskForToday(tasks,'2026-10-16');
+assert.equal(organized[0].date,'2026-10-16');assert.equal(organized[1].date,null);assert.equal(tasks[0].date,null,'does not mutate the AI result');
+assert.deepEqual(recommendFirstTaskForToday([{kind:'task',date:'2026-10-16',time:'11:00'},{kind:'task',date:null,time:null}],'2026-10-16').map(x=>x.date),['2026-10-16',null]);
+assert.equal(recommendFirstTaskForToday([{kind:'task',date:null,time:null,ambiguous:'¿Qué tarea?'}],'2026-10-16')[0].date,null,'does not prioritize an unclear transcript');
+console.log('Day capture assertions passed: one clear task is promoted to today without changing the rest.');

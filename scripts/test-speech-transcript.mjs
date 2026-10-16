@@ -6,4 +6,6 @@ const result=(transcript,isFinal=true)=>({isFinal,0:{transcript}});
 assert.equal(transcriptFromResults([result('subir que la Cacho pimpari en debo'),result('subir que la Cacho pimpari en debo')]),'subir que la Cacho pimpari en debo');
 assert.equal(transcriptFromResults([result('mañana tengo que'),result('mañana tengo que',false),result('llamar al colegio')]),'mañana tengo que llamar al colegio');
 assert.equal(transcriptFromResults([result('  recoger   el paquete '),result('después ir al médico')]),'recoger el paquete después ir al médico');
+assert.equal(transcriptFromResults([result('debo'),result('debo mi'),result('debo migrar'),result('debo migrar la'),result('debo migrar la página'),result('debo migrar la página de carga')]),'debo migrar la página de carga');
+assert.equal(transcriptFromResults([result('debo migrar la página.'),result('debo hablar con Pablo')]),'debo migrar la página. debo hablar con Pablo');
 console.log('Speech transcript assertions passed: interim hypotheses ignored and repeated mobile chunks collapsed.');
