@@ -74,3 +74,7 @@ button:not(.sr-only),summary,.text-button,.icon-button,.round-check,.quick-dates
 @media(max-width:760px){.dashboard-grid{gap:20px}.profile-card-heading{font-size:.8125rem}.snooze-options{gap:8px}.profile-card .audience-options{grid-template-columns:1fr}.profile-card .form-grid{grid-template-columns:1fr}.profile-card-heading .text-button{min-width:72px}.profile-card .language-select{flex-wrap:wrap}}
 
 button:not(.sr-only){min-width:44px}
+/* Make completion an explicit action on every task list. */
+.completion-button{min-height:44px!important;min-width:max-content!important;flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:0 12px!important;font-size:.75rem!important;white-space:nowrap}
+.later-item-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;flex-shrink:0}
+@media(max-width:760px){.compact-activity>.completion-button{min-width:max-content!important;width:auto;padding:0 9px!important;font-size:.6875rem!important}.later-item-actions{align-self:flex-end}}
