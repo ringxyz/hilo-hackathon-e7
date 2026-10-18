@@ -1,0 +1,11 @@
+import assert from 'node:assert/strict';
+import { build } from 'esbuild';
+await build({entryPoints:['src/reminder-identity.ts'],outfile:'.sites-runtime/tests/reminder-identity.mjs',bundle:true,platform:'node',format:'esm',logLevel:'silent'});
+const {uniqueReminders,dueReminderGroups}=await import('../.sites-runtime/tests/reminder-identity.mjs');
+const now=Date.parse('2026-10-18T18:00:00Z');
+const job=(occurrence,kind,state='pending',due_at='2026-10-18T17:00:00Z')=>({id:`${occurrence}-${kind}-${state}`,activity_id:'walk-1',occurrence,kind,state,due_at,acknowledged:false,snoozed:false});
+const fixtures=[job('2026-10-18','appointment'),job('2026-10-18','departure'),job('2026-10-18','appointment'),job('2026-10-17','appointment','skipped'),job('2026-10-16','departure','skipped')];
+assert.equal(uniqueReminders(fixtures).length,4,'Duplicate activity/date/type reminders collapse before display.');
+const groups=dueReminderGroups(fixtures,'2026-10-18',now);assert.equal(groups.length,1,'Only one activity is counted for one occurrence even if it has two reminder types.');assert.deepEqual(groups[0].reminders.map(x=>x.kind).sort(),['appointment','departure']);
+assert.equal(dueReminderGroups([job('2026-10-18','appointment', 'pending','2026-10-18T19:00:00Z')],'2026-10-18',now).length,0,'Future alerts do not count as currently due.');
+console.log('Reminder identity passed: pending due jobs are deduplicated by activity/date/type and grouped into one activity alert; skipped and future jobs are excluded.');

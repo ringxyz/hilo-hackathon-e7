@@ -8,7 +8,7 @@ import { api } from './api';
 import { addDays, departureTime, isDone, localDate, occursOn } from './domain';
 import { recommendFirstTaskForToday, adaptDayToEnergy } from './day-capture';
 import { pick } from './i18n';
-import {readDraft,useDraftPersistence,DraftExit} from './drafts';
+import {readDraft,useDraftPersistence,DraftExit,DraftRestore} from './drafts';
 import {captureExample} from './profile-context';
 import {deduplicateCaptureDrafts} from './capture-deduplication';
 import type { Activity, AppState, Energy } from './types';
@@ -18,13 +18,14 @@ type SavedDraft={text:string;drafts:Draft[];review:boolean;editing:string|null;s
 
 export function DayCapture({state,busy,error,onClose,onSave,onRawSave,mode='day'}:{state:AppState;busy:boolean;error:string;onClose:()=>void;onRawSave:(text:string,id:string)=>Promise<boolean>;mode?:'day'|'idea';onSave:(activities:Partial<Activity>[],requestId:string,energy:Energy)=>Promise<boolean>}){
   const initial=useRef(readDraft<SavedDraft>(state.ownerId,mode)),saved=initial.current;
-  const [text,setText]=useState(saved?.text||''),[drafts,setDrafts]=useState<Draft[]>(saved?.drafts||[]),[review,setReview]=useState(saved?.review||false),[editing,setEditing]=useState<string|null>(saved?.editing||null),[working,setWorking]=useState(false),[recording,setRecording]=useState(false),[message,setMessage]=useState(''),[study,setStudy]=useState<string|null>(saved?.study||null),[exit,setExit]=useState(false),[deduplicated,setDeduplicated]=useState(saved?.deduplicated||0),[alreadyPlanned,setAlreadyPlanned]=useState(saved?.alreadyPlanned||0);
+  const [text,setText]=useState(saved?.text||''),[drafts,setDrafts]=useState<Draft[]>(saved?.drafts||[]),[review,setReview]=useState(saved?.review||false),[editing,setEditing]=useState<string|null>(saved?.editing||null),[working,setWorking]=useState(false),[recording,setRecording]=useState(false),[message,setMessage]=useState(''),[study,setStudy]=useState<string|null>(saved?.study||null),[exit,setExit]=useState(false),[restoring,setRestoring]=useState(!!saved),[deduplicated,setDeduplicated]=useState(saved?.deduplicated||0),[alreadyPlanned,setAlreadyPlanned]=useState(saved?.alreadyPlanned||0);
   const requestId=useRef(saved?.requestId||crypto.randomUUID()),capturedAt=useRef(saved?.capturedAt||Date.now()),today=localDate(new Date(capturedAt.current),state.settings.timezone),ai=state.aiConfigured&&state.settings.profile.aiConsent;
   const [energy,setEnergy]=useState<Energy>(saved?.energy||(state.settings.dayEnergy?.date===today?state.settings.dayEnergy.value:'medium'));
   const existing=state.activities.filter(a=>a.kind==='task'&&occursOn(a,today)&&!isDone(a,today)).length;
   const rawRequestId=useRef(saved?.rawRequestId||crypto.randomUUID()),isDay=mode==='day';
   const persistence=useDraftPersistence(state.ownerId,mode,{text,drafts,review,editing,study,energy,requestId:requestId.current,rawRequestId:rawRequestId.current,capturedAt:capturedAt.current,deduplicated,alreadyPlanned},!!text.trim()||drafts.length>0);
-  function requestClose(){if(working||busy)return;if(text.trim()||drafts.length)setExit(true);else onClose();}
+  const draftValue={text,drafts,review,editing,study,energy,requestId:requestId.current,rawRequestId:rawRequestId.current,capturedAt:capturedAt.current,deduplicated,alreadyPlanned};
+  function requestClose(){if(working||busy)return;if(restoring){onClose();return;}if(text.trim()||drafts.length)setExit(true);else onClose();}
   const empty=!text.trim(),waiting=working||busy;
   const rawReason=empty?pick('Escribe o dicta algo para continuar.','Write or dictate something to continue.'):recording?pick('Detén el dictado y revisa tu texto para continuar.','Stop dictation and review your text to continue.'):waiting?pick('Espera a que termine la acción en curso.','Wait for the current action to finish.'):'';
   const aiReason=rawReason||(!navigator.onLine?pick('Sin conexión. Puedes guardar tal cual; para revisar con IA necesitas internet.','Offline. You can save as-is; AI review needs internet.'):!ai?pick('La IA no está activada. Puedes guardar tal cual o activar la IA en Ajustes.','AI is not enabled. Save as-is or enable AI in Settings.'):'');
@@ -68,7 +69,8 @@ export function DayCapture({state,busy,error,onClose,onSave,onRawSave,mode='day'
     if(await onSave(items,requestId.current,energy)){persistence.clear();onClose();}
   }
 
-  return <Modal title={review?pick('Revisa tus tareas','Review your tasks'):isDay?pick('Cuéntame tu día','Tell me about your day'):pick('Guardar idea','Save an idea')} onClose={requestClose} wide={review}>
+  return <Modal title={restoring?pick('Tienes un borrador guardado.','You have a saved draft.'):review?pick('Revisa tus tareas','Review your tasks'):isDay?pick('Cuéntame tu día','Tell me about your day'):pick('Guardar idea','Save an idea')} onClose={requestClose} wide={review}>
+    {restoring?<DraftRestore onContinue={()=>{persistence.clear();setRestoring(false);}} onDiscard={()=>{persistence.clear();setText('');setDrafts([]);setReview(false);setEditing(null);setStudy(null);setDeduplicated(0);setAlreadyPlanned(0);setEnergy(state.settings.dayEnergy?.date===today?state.settings.dayEnergy.value:'medium');requestId.current=crypto.randomUUID();rawRequestId.current=crypto.randomUUID();capturedAt.current=Date.now();setRestoring(false);}}/>:<>
     <div className="day-capture">
       {!review?<>
         {isDay&&<fieldset className="energy-picker"><legend>{pick('¿Cómo está tu energía hoy?','How is your energy today?')}</legend><div className="choice-row">{(['low','medium','high'] as const).map(e=><button type="button" key={e} aria-pressed={e===energy} onClick={()=>setEnergy(e)}>{e==='low'?pick('Baja','Low'):e==='medium'?pick('Media','Medium'):pick('Alta','High')}</button>)}</div></fieldset>}
@@ -127,7 +129,8 @@ export function DayCapture({state,busy,error,onClose,onSave,onRawSave,mode='day'
         {unresolved&&<p className="field-help">{overCapacity?pick('Para energía baja deja como máximo 3 tareas en Hoy, contando las que ya tienes. Puedes cambiar el día del resto.','For low energy, keep up to 3 tasks in Today including your existing tasks. You can change the day for the rest.'):pick('Revisa o corrige las propuestas que aún tienen una duda.','Review or edit suggestions that still have an unresolved question.')}</p>}
       </>}
       {(message||error)&&<p className="inline-error" role="alert">{message||error}</p>}
-    {exit&&<DraftExit storageError={persistence.storageError} onContinue={()=>setExit(false)} onSave={onClose} onDiscard={()=>{persistence.clear();onClose();}}/>}
+    {exit&&<DraftExit storageError={persistence.storageError} onContinue={()=>setExit(false)} onSave={()=>{if(persistence.save(draftValue))onClose();}} onDiscard={()=>{persistence.clear();onClose();}}/>}
     </div>
+    </>}
   </Modal>;
 }

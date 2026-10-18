@@ -1,10 +1,12 @@
 import type {Profile} from './types';
 import {pick} from './i18n';
 export function courseExample(p:Profile){
-  if(p.studyLevel==='primary'||(!p.studyLevel&&p.audience==='child'))return pick('Por ejemplo: 5.º de Primaria','For example: Year 5 (primary school)');
+  if(p.studyLevel==='primary'||(!p.studyLevel&&p.audience==='child'))return pick('Por ejemplo: 4.º de Primaria','For example: Year 4 (primary school)');
+  if(p.studyLevel==='university')return pick('Por ejemplo: 2.º de Grado','For example: second year of university');
   if(p.studyLevel==='baccalaureate')return pick('Por ejemplo: 1.º de Bachillerato','For example: first year of upper secondary school');
   if(p.studyLevel==='secondary'||(!p.studyLevel&&p.audience==='teen'))return pick('Por ejemplo: 2.º de ESO','For example: Year 9 (secondary school)');
-  return pick('Por ejemplo: inglés B1','For example: B1 English');
+  if(p.studyLevel==='other')return pick('Por ejemplo: curso de idiomas','For example: language course');
+  return '';
 }
 export function captureExample(p:Profile){
   if(p.audience==='child')return pick('Hoy quiero preparar mi mochila y después jugar…','Today I want to pack my school bag and then play…');
