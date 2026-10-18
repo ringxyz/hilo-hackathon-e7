@@ -1,11 +1,12 @@
 import type {Profile} from './types';
 import {pick} from './i18n';
+export function cleanSampleCourse(course:string){return /^(estudiante de muestra|sample student)$/i.test(course.trim())?'':course;}
 export function courseExample(p:Profile){
-  if(p.studyLevel==='primary'||(!p.studyLevel&&p.audience==='child'))return pick('Por ejemplo: 4.º de Primaria','For example: Year 4 (primary school)');
-  if(p.studyLevel==='university')return pick('Por ejemplo: 2.º de Grado','For example: second year of university');
-  if(p.studyLevel==='baccalaureate')return pick('Por ejemplo: 1.º de Bachillerato','For example: first year of upper secondary school');
-  if(p.studyLevel==='secondary'||(!p.studyLevel&&p.audience==='teen'))return pick('Por ejemplo: 2.º de ESO','For example: Year 9 (secondary school)');
-  if(p.studyLevel==='other')return pick('Por ejemplo: curso de idiomas','For example: language course');
+  if(p.studyLevel==='primary'||(!p.studyLevel&&p.audience==='child'))return pick('4.º de Primaria','Year 4 (primary school)');
+  if(p.studyLevel==='university')return pick('2.º de Grado','Second year of university');
+  if(p.studyLevel==='baccalaureate')return pick('1.º de Bachillerato','First year of upper secondary school');
+  if(p.studyLevel==='secondary'||(!p.studyLevel&&p.audience==='teen'))return pick('2.º de ESO','Year 9 (secondary school)');
+  if(p.studyLevel==='other')return pick('Curso de idiomas','Language course');
   return '';
 }
 export function captureExample(p:Profile){

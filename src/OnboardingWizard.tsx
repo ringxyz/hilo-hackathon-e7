@@ -4,14 +4,15 @@ import { CalendarConnection, type Mutate } from './CalendarConnection';
 import { PushSettings } from './PushSettings';
 import { LanguageSelector, LegalLinks } from './AppUtilities';
 import { getLanguage, pick } from './i18n';
-import {courseExample} from './profile-context';
+import {cleanSampleCourse,courseExample} from './profile-context';
 import type { AppState, Profile, Settings } from './types';
 
 export const onboardingKey=(owner:string)=>'hilo-onboarding-v2:'+owner;
 type Draft={step:number;settings:Settings;calendarId?:string};
 function initial(state:AppState):Draft {
-  try {const raw=sessionStorage.getItem(onboardingKey(state.ownerId||''));if(raw){const d=JSON.parse(raw);if(d.step>=1&&d.step<=5&&d.settings?.profile)return {...d,calendarId:d.calendarId||state.google.readCalendar||'primary'};}} catch {}
-  const s=state.settings;
+  const cleanCourse=(settings:Settings):Settings=>({ ...settings, profile:{...settings.profile,course:cleanSampleCourse(settings.profile.course)} });
+  try {const raw=sessionStorage.getItem(onboardingKey(state.ownerId||''));if(raw){const d=JSON.parse(raw);if(d.step>=1&&d.step<=5&&d.settings?.profile)return {...d,settings:cleanCourse(d.settings),calendarId:d.calendarId||state.google.readCalendar||'primary'};}} catch {}
+  const s=cleanCourse(state.settings);
   return {step:1,calendarId:state.google.readCalendar||'primary',settings:{...s,defaultTravelMinutes:s.defaultTravelMinutes??30,profile:{...s.profile,studying:s.profile.studying??(s.profile.course.trim()?true:undefined),subjects:s.profile.subjects??s.profile.course,studyLevel:s.profile.studyLevel??(s.profile.audience==='teen'?'secondary':s.profile.audience==='child'?'primary':'other'),useCases:s.profile.useCases||[]}}};
 }
 export function OnboardingWizard({state,busy,error,mutate,refresh,onFinish,onCancel}:{state:AppState;busy:boolean;error:string;mutate:Mutate;refresh:()=>void;onFinish:(settings:Settings,calendarId:string)=>Promise<boolean>;onCancel?:()=>void}) {
