@@ -1,24 +1,28 @@
 import { useRef, useState } from 'react';
 import { ArrowLeft, Check, Sparkles } from 'lucide-react';
 import { VoiceInput } from './VoiceInput';
+import { CaptureHints } from './CaptureHints';
+import { MicroSteps } from './MicroSteps';
 import { Modal } from './components';
 import { api } from './api';
-import { addDays, departureTime, localDate } from './domain';
-import { recommendFirstTaskForToday } from './day-capture';
+import { addDays, departureTime, isDone, localDate, occursOn } from './domain';
+import { recommendFirstTaskForToday, adaptDayToEnergy } from './day-capture';
 import { pick } from './i18n';
-import type { Activity, AppState } from './types';
+import type { Activity, AppState, Energy } from './types';
 
 type Draft=Partial<Activity>&{id:string;ambiguous?:string};
 
-export function DayCapture({state,busy,error,onClose,onSave}:{state:AppState;busy:boolean;error:string;onClose:()=>void;onSave:(activities:Partial<Activity>[],requestId:string)=>Promise<boolean>}){
+export function DayCapture({state,busy,error,onClose,onSave}:{state:AppState;busy:boolean;error:string;onClose:()=>void;onSave:(activities:Partial<Activity>[],requestId:string,energy:Energy)=>Promise<boolean>}){
   const [text,setText]=useState(''),[drafts,setDrafts]=useState<Draft[]>([]),[review,setReview]=useState(false),[editing,setEditing]=useState(false),[working,setWorking]=useState(false),[recording,setRecording]=useState(false),[message,setMessage]=useState(''),[study,setStudy]=useState<string|null>(null);
   const requestId=useRef(crypto.randomUUID()),capturedAt=useRef(Date.now()),today=localDate(new Date(capturedAt.current),state.settings.timezone),ai=state.aiConfigured&&state.settings.profile.aiConsent;
+  const [energy,setEnergy]=useState<Energy>(state.settings.dayEnergy?.date===today?state.settings.dayEnergy.value:'medium');
+  const existing=state.activities.filter(a=>a.kind==='task'&&occursOn(a,today)&&!isDone(a,today)).length;
 
   async function propose(){
     setWorking(true);setMessage('');
     try{
-      const result=await api<{drafts:Partial<Activity>[];studySuggestion:string|null}>('/api/capture/parse',{text,capturedAt:capturedAt.current,tomorrow:false,useAI:!!ai,dayPlan:true});
-      const proposed=recommendFirstTaskForToday(result.drafts.map(d=>({...d,id:crypto.randomUUID()})),today);
+      const result=await api<{drafts:Partial<Activity>[];studySuggestion:string|null}>('/api/capture/parse',{text,capturedAt:capturedAt.current,tomorrow:false,useAI:!!ai,dayPlan:true,energy});
+      const proposed=adaptDayToEnergy(recommendFirstTaskForToday(result.drafts.map(d=>({...d,id:crypto.randomUUID()})),today),today,energy,existing);
       setDrafts(proposed);setStudy(result.studySuggestion);setReview(true);
     }catch(e){setMessage((e as Error).message);}
     finally{setWorking(false);}
@@ -29,12 +33,13 @@ export function DayCapture({state,busy,error,onClose,onSave}:{state:AppState;bus
       if(d.id!==id)return d;
       const next={...d,...values};
       if(!next.date){next.time=null;next.reminder=false;}
-      if(!next.time){next.reminder=false;next.recurrence='none';}
+      if(!next.time)next.reminder=false;
       return next;
     }));
   }
 
-  const unresolved=drafts.some(d=>!d.title?.trim()||d.ambiguous||!d.duration||d.duration<1||d.duration>240||(!!d.time&&!/^(?:[01]\d|2[0-3]):[0-5]\d$/.test(d.time)));
+  const overCapacity=energy==='low'&&drafts.filter(d=>d.kind==='task'&&d.date===today).length>Math.max(0,3-existing);
+  const unresolved=overCapacity||drafts.some(d=>!d.title?.trim()||d.ambiguous||!d.duration||d.duration<1||d.duration>240||(!!d.time&&!/^(?:[01]\d|2[0-3]):[0-5]\d$/.test(d.time)));
   const dated=drafts.filter(d=>d.date),later=drafts.filter(d=>!d.date);
   const priority=drafts.find(d=>d.kind==='task'&&d.date===today&&!d.time);
   const onlyTasks=drafts.every(d=>d.kind==='task');
@@ -43,15 +48,17 @@ export function DayCapture({state,busy,error,onClose,onSave}:{state:AppState;bus
     const items=drafts.map(({ambiguous,...d})=>!d.date
       ?{...d,date:null,time:null,reminder:false,recurrence:'none' as const}
       :{...d,time:d.time||null,reminder:!!d.time&&!!d.reminder});
-    if(await onSave(items,requestId.current))onClose();
+    if(await onSave(items,requestId.current,energy))onClose();
   }
 
-  return <Modal title={review?pick('Revisa tus tareas','Review your tasks'):pick('Cuéntamelo','Tell me')} onClose={onClose} wide={review}>
+  return <Modal title={review?pick('Revisa tus tareas','Review your tasks'):pick('Cuéntame tu día','Tell me about your day')} onClose={onClose} wide={review}>
     <div className="day-capture">
       {!review?<>
+        <fieldset className="energy-picker"><legend>{pick('¿Cómo está tu energía hoy?','How is your energy today?')}</legend><div className="choice-row">{(['low','medium','high'] as const).map(e=><button type="button" key={e} aria-pressed={e===energy} onClick={()=>setEnergy(e)}>{e==='low'?pick('Baja','Low'):e==='medium'?pick('Media','Medium'):pick('Alta','High')}</button>)}</div></fieldset>
         <label className="field">{pick('Te leo','I’m listening')}
           <textarea autoFocus rows={6} maxLength={6000} value={text} onChange={e=>setText(e.target.value)} placeholder={state.settings.profile.audience==='child'?pick('¿Qué tienes hoy? Puedes contarlo como quieras.','What is happening today? Tell it your way.'):state.settings.profile.studying?pick('Hoy tengo clase a las 9:00, paseo a las 19:30 y quiero repasar fracciones…','Class at 9:00, a walk at 19:30 and I want to review fractions…'):pick('Hoy tengo una reunión a las 10:00 y quiero comprar un regalo…','A meeting at 10:00 today, and I want to buy a present…')}/>
         </label>
+        <CaptureHints text={text} today={today} onChange={setText}/>
         <VoiceInput value={text} onChange={setText} disabled={working||busy} onRecording={setRecording}/>
         <p className="field-help">{ai?pick('Revisarás todas las propuestas antes de añadirlas. Este texto y tu contexto se envían a Anthropic.','Review every suggestion before adding it. This text and your context are sent to Anthropic.'):pick('La IA está desactivada. Hilo separará las tareas con reglas sencillas; podrás revisar cada propuesta.','AI is off. Hilo will separate tasks with simple rules, and you can review each suggestion.')}</p>
         <button className="button primary full" disabled={working||busy||recording||!text.trim()||!navigator.onLine} onClick={propose}>
@@ -60,6 +67,7 @@ export function DayCapture({state,busy,error,onClose,onSave}:{state:AppState;bus
       </>:<>
         <p className="field-help">{pick('Revisa la propuesta. Te sugerimos un primer paso para hoy y guardamos el resto en Después. Puedes cambiarlo antes de añadir.','Review the suggestions. We recommend one first step for today and save the rest in Later. You can change this before adding them.')}</p>
         {priority&&<p className="plan-priority"><strong>{pick('Para empezar hoy:','Suggested first step today:')}</strong> {priority.title}</p>}
+        {energy==='low'&&<p className="field-help">{pick(`Energía baja: como máximo ${Math.max(0,3-existing)} tareas nuevas para hoy, además de tus citas. Pausas de 10 min entre bloques al reorganizar. Lo demás te espera en Después.`, `Low energy: up to ${Math.max(0,3-existing)} new tasks today, plus your appointments. Replanning leaves 10-minute breaks between blocks. The rest waits in Later.`)}</p>}
         <div className="day-plan-list">
           {drafts.map(d=>{
             let departure=null;
@@ -87,6 +95,7 @@ export function DayCapture({state,busy,error,onClose,onSave}:{state:AppState;bus
                 {d.nextStep&&<p className="plan-next-step">{d.nextStep}</p>}
                 {d.date&&d.time&&<small>{pick('Podrás posponer 10 min, 1 h o Mañana desde Ver mi día.','Snooze 10 min, 1 h or Tomorrow from View my day.')}</small>}
               </>}
+              {d.kind==='task'&&<MicroSteps activity={d} enabled={!!ai} energy={energy} busy={busy} onChange={steps=>change(d.id,{steps,stepsDate:today,nextStep:steps.find(s=>!s.done)?.title||''})}/>}
               {d.ambiguous&&<p className="inline-error">{d.ambiguous} <button className="text-button" onClick={()=>change(d.id,{ambiguous:'',date:null,time:null,reminder:false})}>{pick('Dejar en Después','Leave in Later')}</button></p>}
             </article>;
           })}
@@ -94,7 +103,7 @@ export function DayCapture({state,busy,error,onClose,onSave}:{state:AppState;bus
         {study&&<p className="plan-study"><strong>{pick('Hoy solo 5','Just 5 today')}</strong> · {study}<br/><span>{pick('En Repaso puedes revisar tus fichas o crear nuevas con fuentes.','Review your cards or create new ones with sources in Review.')}</span></p>}
         <p className="field-help">{pick(`${dated.length} con día asignado y ${later.length} en Después. Las citas con hora conservarán sus avisos.`,`${dated.length} assigned a day and ${later.length} in Later. Appointments with a time keep their reminders.`)}</p>
         <button className="button primary full" disabled={busy||!drafts.length||unresolved} onClick={save}><Check size={19}/>{busy?pick('Añadiendo…','Adding…'):pick(`Agregar ${drafts.length} ${onlyTasks?(drafts.length===1?'tarea':'tareas'):'actividades'}`,`Add ${drafts.length} ${onlyTasks?(drafts.length===1?'task':'tasks'):'items'}`)}</button>
-        {unresolved&&<p className="field-help">{pick('Revisa o corrige las propuestas que aún tienen una duda.','Review or edit suggestions that still have an unresolved question.')}</p>}
+        {unresolved&&<p className="field-help">{overCapacity?pick('Para energía baja deja como máximo 3 tareas en Hoy, contando las que ya tienes. Puedes cambiar el día del resto.','For low energy, keep up to 3 tasks in Today including your existing tasks. You can change the day for the rest.'):pick('Revisa o corrige las propuestas que aún tienen una duda.','Review or edit suggestions that still have an unresolved question.')}</p>}
         <div className="day-plan-actions"><button className="button white" disabled={busy} onClick={()=>setEditing(!editing)}>{editing?pick('Ver propuesta','Preview plan'):pick('Cambiar algo','Change something')}</button><button className="text-button" disabled={busy} onClick={()=>{setReview(false);setEditing(false);}}><ArrowLeft size={16}/>{pick('Volver a mi texto','Back to my text')}</button></div>
       </>}
       {(message||error)&&<p className="inline-error" role="alert">{message||error}</p>}

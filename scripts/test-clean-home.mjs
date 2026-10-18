@@ -10,7 +10,7 @@ const base={title:'Clase',kind:'event',date:'2026-10-16',time:'09:00',duration:6
 let [draft]=prepareDayDrafts([base],settings);
 assert.equal(draft.reminder,true);assert.equal(draft.travelMinutes,45);assert.equal(draft.timezone,'Europe/Madrid');
 [draft]=prepareDayDrafts([{...base,title:'Repasar fracciones',kind:'task',time:null,purpose:'study',reminder:true}],settings);
-assert.equal(draft.date,null);assert.equal(draft.time,null);assert.equal(draft.reminder,false);assert.equal(draft.purpose,'study');
+assert.equal(draft.date,'2026-10-16');assert.equal(draft.time,null);assert.equal(draft.reminder,false);assert.equal(draft.purpose,'study');
 [draft]=prepareDayDrafts([{...base,date:null}],settings);assert.equal(draft.date,null);assert.match(draft.ambiguous,/Confirma/);
 [draft]=prepareDayDrafts([{...base,ambiguous:'¿Por la mañana?'}],settings);assert.equal(draft.time,null);assert.equal(draft.reminder,false);
 [draft]=prepareDayDrafts([{...base,purpose:null}],settings);assert.equal(draft.purpose,undefined);

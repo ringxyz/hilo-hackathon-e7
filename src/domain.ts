@@ -1,4 +1,5 @@
 import type { Activity, FocusSession } from "./types";
+import { applyCaptureHints } from './capture-hints';
 export function localDate(now = new Date(), timezone = "Europe/Madrid") {
   const p = new Intl.DateTimeFormat("en-CA", { timeZone: timezone, year:"numeric", month:"2-digit", day:"2-digit" }).formatToParts(now);
   return `${p.find(x=>x.type==="year")!.value}-${p.find(x=>x.type==="month")!.value}-${p.find(x=>x.type==="day")!.value}`;
@@ -15,6 +16,9 @@ export function isDone(a: Activity, date: string) { return a.recurrence==="none"
 export function elapsedSeconds(s: FocusSession, now = Date.now()) { return Math.max(0, s.elapsed + (s.status==="running"&&s.startedAt ? Math.floor((now-s.startedAt)/1000):0)); }
 export function pauseSession(s: FocusSession, note: string, now = Date.now()): FocusSession {return {...s, elapsed:elapsedSeconds(s,now), startedAt:null, status:"paused",note};}
 export function parseCapture(text: string, baseDate: string, tomorrow = false, language:'es'|'en'='es'): Partial<Activity>[] {
+  return parseBasicCapture(text,baseDate,tomorrow,language);
+}
+function parseBasicCapture(text: string, baseDate: string, tomorrow = false, language:'es'|'en'='es'): Partial<Activity>[] {
   if(language==='en')return parseEnglishCapture(text,baseDate,tomorrow);
   const defaultDate = tomorrow ? addDays(baseDate,1):null;
   const pieces=text.trim().split(/\n|;|,(?=\s*(?:mañana|hoy|preparar|comprar|repasar|terminar|hacer|llamar|reunión|entrenamiento|cita|estudiar))|\s+y\s+(?=(?:preparar|comprar|repasar|terminar|hacer|llamar|reunión|entrenamiento|cita|estudiar)\b)/i).filter(x=>x.trim());
@@ -35,7 +39,7 @@ export function parseCapture(text: string, baseDate: string, tomorrow = false, l
     if(recurrence!=="none"&&!date)ambiguous="Elige el primer día de la repetición.";
     const duration=piece.match(/(\d+)\s*(?:minutos|min)\b/i);
     const title=piece.replace(t?.[0]||words?.[0]||/$(?!)/,"").replace(/\b(?:mañana|hoy)\b/ig,"").replace(explicitDate?.[0]||/$(?!)/,"").replace(/todos los días|cada día|diariamente|cada semana|semanalmente|cada año|anualmente/ig,"").replace(/\s+/g," ").trim().replace(/^[,.\s]+|[,.\s]+$/g,"");
-    return {title:title.charAt(0).toUpperCase()+title.slice(1),kind:t||words?"event":"task",date,time,duration:duration?Math.min(240,Math.max(1,Number(duration[1]))):15,estimated:!duration,nextStep:"",note:"",status:"pending",color:(["pink","mint","peach","blue"] as const)[index%4],recurrence,source:"hilo",reminder:false,ambiguous};
+    return applyCaptureHints({title:title.charAt(0).toUpperCase()+title.slice(1),kind:/\b(?:reunión|clase|cita|entrenamiento|visita|consulta|examen|vuelo)\b/i.test(piece)?"event":"task",date,time,duration:duration?Math.min(240,Math.max(1,Number(duration[1]))):15,estimated:!duration,nextStep:"",note:"",status:"pending",color:(["pink","mint","peach","blue"] as const)[index%4],recurrence,source:"hilo",reminder:false,ambiguous},piece,baseDate,language);
   });
 }
 function parseEnglishCapture(text:string,baseDate:string,tomorrow:boolean):Partial<Activity>[] {
@@ -46,7 +50,7 @@ function parseEnglishCapture(text:string,baseDate:string,tomorrow:boolean):Parti
     if(match){let hour=Number(match[1]);const minutes=Number(match[2]||0),period=match[3]?.toLowerCase();if(hour>23||minutes>59||(period&&(hour<1||hour>12)))ambiguous='Check the time.';else if(!period&&hour>=1&&hour<=12)ambiguous='Choose the time: am or pm?';else{if(period==='pm'&&hour<12)hour+=12;if(period==='am'&&hour===12)hour=0;time=String(hour).padStart(2,'0')+':'+String(minutes).padStart(2,'0');if(!date)ambiguous='Choose a date for this event.';}}
     const recurrence:Activity['recurrence']=/every day|daily/i.test(piece)?'daily':/every week|weekly/i.test(piece)?'weekly':/every year|annually/i.test(piece)?'annual':'none';if(recurrence!=='none'&&!date)ambiguous='Choose the first day of the repeat.';
     const duration=piece.match(/(\d+)\s*(?:minutes|min)\b/i),title=piece.replace(match?.[0]||/$(?!)/,'').replace(explicit?.[0]||/$(?!)/,'').replace(/\b(today|tomorrow|every day|daily|every week|weekly|every year|annually)\b/ig,'').replace(/\s+/g,' ').trim();
-    return {title:title.charAt(0).toUpperCase()+title.slice(1),kind:match?'event':'task',date,time,duration:duration?Math.max(1,Math.min(240,Number(duration[1]))):15,estimated:!duration,nextStep:'',note:'',status:'pending',color:(['pink','mint','peach','blue'] as const)[index%4],recurrence,source:'hilo',reminder:false,ambiguous};
+    return applyCaptureHints({title:title.charAt(0).toUpperCase()+title.slice(1),kind:/\b(?:meeting|class|appointment|training|visit|exam|flight)\b/i.test(piece)?'event':'task',date,time,duration:duration?Math.max(1,Math.min(240,Number(duration[1]))):15,estimated:!duration,nextStep:'',note:'',status:'pending',color:(['pink','mint','peach','blue'] as const)[index%4],recurrence,source:'hilo',reminder:false,ambiguous},piece,baseDate,'en');
   });
 }
 export function timeToInstant(date:string,time:string,zone:string):Date {

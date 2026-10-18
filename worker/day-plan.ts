@@ -7,8 +7,8 @@ export function prepareDayDrafts(values:Record<string,unknown>[],settings:Settin
     let ambiguous=typeof value.ambiguous==='string'?value.ambiguous.slice(0,500):'';
     const hasTime=typeof value.time==='string'&&/^(?:[01]\d|2[0-3]):[0-5]\d$/.test(value.time),hasDate=typeof value.date==='string';
     if(hasTime&&!hasDate)ambiguous ||= 'Confirma el día de esta actividad.';
-    const scheduled=hasTime&&hasDate&&!ambiguous;
-    const a=activitySchema.parse({...value,purpose:value.purpose==='study'?'study':undefined,date:scheduled?value.date:null,time:scheduled?value.time:null,recurrence:scheduled?(value.recurrence||'none'):'none',reminder:scheduled,status:'pending',source:'hilo',travelMinutes:value.kind==='event'?(settings.defaultTravelMinutes??30):0,timezone:settings.timezone});
+    const scheduled=hasTime&&hasDate&&!ambiguous,dated=hasDate&&!ambiguous;
+    const a=activitySchema.parse({...value,tag:typeof value.tag==='string'?value.tag:undefined,priority:[1,2,3,4].includes(value.priority as number)?value.priority:undefined,purpose:value.purpose==='study'?'study':undefined,date:dated?value.date:null,time:scheduled?value.time:null,recurrence:dated?(value.recurrence||'none'):'none',reminder:scheduled,status:'pending',source:'hilo',travelMinutes:value.kind==='event'?(settings.defaultTravelMinutes??30):0,timezone:settings.timezone});
     return {...a,ambiguous};
   });
 }

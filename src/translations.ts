@@ -463,3 +463,19 @@ Object.assign(english,{
 
 Object.assign(english,{'Inicio':'Home','Esa hora no existe por el cambio horario. Elige otra hora.':'This time does not exist because the clocks change. Choose another time.','Elige una actividad pendiente.':'Choose an unfinished activity.'});
 Object.assign(english,{'Autorización cancelada. Pulsa Conectar de nuevo.':'Authorisation cancelled. Select Connect again.','Autorización caducada. Pulsa Conectar de nuevo.':'Authorisation expired. Select Connect again.'});
+Object.assign(english,{
+ 'La propuesta necesita actualizarse. Vuelve a reorganizar tu día.':'The plan needs refreshing. Reorganise your day again.',
+ 'Tu agenda cambió. Prepara una propuesta nueva antes de guardar.':'Your planner changed. Prepare a new plan before saving.',
+ 'Tu foco cambió. Actualiza la propuesta.':'Your focus changed. Refresh the plan.',
+ 'Esta propuesta ya no está disponible. Actualiza tu día.':'This plan is no longer available. Refresh your day.',
+ 'Revisa el horario de la propuesta.':'Check the proposed schedule.',
+ 'Revisa el día y la hora.':'Check the day and time.',
+ 'Ese bloque coincide con otra actividad o necesita una hora nueva.':'This block overlaps another activity or needs a new time.',
+ 'El bloque coincide con tu horario de silencio.':'This block falls within your quiet hours.',
+ 'El bloque coincide con una tarea que conservaste.':'This block overlaps a task you kept.',
+ 'La cita de Google es de solo lectura.':'The Google appointment is read-only.',
+ 'Actualiza tu día antes de guardar el paso.':'Refresh your day before saving the step.',
+ 'Tu agenda cambió o no se pudo guardar. Actualiza la propuesta antes de intentarlo de nuevo.':'Your planner changed or could not be saved. Refresh the plan before trying again.',
+ 'El primer paso resultó demasiado largo. Prueba otra vez.':'The first step was too long. Please try again.',
+ 'Cada paso debe ser distinto.':'Every step needs a different ID.'
+});
