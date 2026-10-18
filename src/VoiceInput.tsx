@@ -1,24 +1,29 @@
 import { tr, locale, pick } from './i18n';
-import { transcriptFromResults } from './speech-transcript';
+import { createSpeechSession, speechErrorText } from './speech-session';
 import { useEffect, useRef, useState } from 'react';
 import { Mic, Square } from 'lucide-react';
 
 export function VoiceInput({value,onChange,disabled=false,onRecording,reviewHint=false}:{value:string;onChange:(v:string)=>void;disabled?:boolean;onRecording?:(v:boolean)=>void;reviewHint?:boolean}) {
   const [recording,setRecording]=useState(false),[seconds,setSeconds]=useState(0),[message,setMessage]=useState('');
-  const voice=useRef<any>(null),timer=useRef<ReturnType<typeof setInterval>|null>(null),limit=useRef<ReturnType<typeof setTimeout>|null>(null),base=useRef(''),alive=useRef(true),cancelled=useRef(false);
+  const voice=useRef<ReturnType<typeof createSpeechSession>|null>(null),timer=useRef<ReturnType<typeof setInterval>|null>(null),alive=useRef(true);
   const change=useRef(onChange),status=useRef(onRecording);change.current=onChange;status.current=onRecording;
-  function clear(){if(timer.current)clearInterval(timer.current);if(limit.current)clearTimeout(limit.current);}
-  useEffect(()=>{alive.current=true;return()=>{alive.current=false;cancelled.current=true;clear();voice.current?.abort();status.current?.(false);};},[]);
-  function stop(cancel=false){cancelled.current=cancel;cancel?voice.current?.abort():voice.current?.stop();if(cancel)change.current(base.current.trim());}
+  function clear(){if(timer.current)clearInterval(timer.current);timer.current=null;}
+  useEffect(()=>{alive.current=true;return()=>{alive.current=false;clear();voice.current?.dispose();status.current?.(false);};},[]);
+  function stop(cancel=false){voice.current?.stop(cancel);}
   function start(){
     const Speech=(window as any).SpeechRecognition||(window as any).webkitSpeechRecognition;
-    if(!Speech){setMessage(tr("Este navegador no ofrece dictado. Puedes usar el micrófono del teclado del móvil o escribir aquí."));return;}
-    setMessage('');base.current=value.trim()?value.trim()+'\n':'';cancelled.current=false;
-    const r=new Speech();voice.current=r;r.lang=locale();r.continuous=true;r.interimResults=false;
-    r.onresult=(event:any)=>{const text=transcriptFromResults(event.results);if(alive.current&&!cancelled.current)change.current((base.current+text).slice(0,6000));};
-    r.onerror=(event:any)=>{if(alive.current&&event.error!=='aborted')setMessage(event.error==='not-allowed'?tr("El micrófono no tiene permiso. Puedes activarlo en el navegador o escribir."):tr("El dictado se ha interrumpido. Revisa el texto y continúa cuando quieras."));};
-    r.onend=()=>{clear();if(alive.current){setRecording(false);status.current?.(false);}};
-    try{r.start();setSeconds(0);setRecording(true);status.current?.(true);timer.current=setInterval(()=>setSeconds(s=>s+1),1000);limit.current=setTimeout(()=>r.stop(),180000);}catch{setMessage(tr("No se pudo abrir el micrófono. Puedes seguir escribiendo."));}
+    const showError=(code:string)=>{if(alive.current)setMessage(speechErrorText(code,locale().startsWith('en')));};
+    if(!Speech){showError('unsupported');return;}
+    if(!navigator.onLine){showError('offline');return;}
+    voice.current?.dispose();setMessage('');setSeconds(0);
+    voice.current=createSpeechSession({
+      initialText:value,
+      create:()=>{const r=new Speech();r.lang=locale();return r;},
+      onText:text=>{if(alive.current)change.current(text);},
+      onActive:active=>{clear();if(!alive.current)return;setRecording(active);status.current?.(active);if(active)timer.current=setInterval(()=>setSeconds(s=>s+1),1000);},
+      onError:showError,
+    });
+    voice.current.start();
   }
-  return <div className="voice-input"><div className="voice-controls">{recording?<><button type="button" className="button recording" onClick={()=>stop()}><Square size={16}/> {tr("Detener ·")} {seconds}s</button><button type="button" className="text-button" onClick={()=>stop(true)}>{tr("Cancelar dictado")}</button></>:<button type="button" className="button white" disabled={disabled} onClick={start}><Mic size={19}/> {tr("Dictar")}</button>}<span>{pick("Hasta 3 minutos por dictado","Up to 3 minutes per recording")}</span></div><p className="field-help">{reviewHint?pick("Tu voz se convierte en texto aquí. Hilo no guarda el audio. Revisa lo escrito antes de pulsar Revisar.","Your voice becomes text here. Hilo does not save audio. Check the text before selecting Review."):pick("Tu voz se convierte en texto aquí. Hilo no guarda el audio. Revisa lo escrito antes de continuar.","Your voice becomes text here. Hilo does not save audio. Check the text before continuing.")}</p>{message&&<p className="inline-error" role="status">{message}</p>}</div>;
+  return <div className="voice-input"><div className="voice-controls">{recording?<><button type="button" className="button recording" onClick={()=>stop()}><Square size={16}/> {tr("Detener ·")} {seconds}s</button><button type="button" className="text-button" onClick={()=>stop(true)}>{tr("Cancelar dictado")}</button></>:<button type="button" className="button white" disabled={disabled} onClick={start}><Mic size={19}/> {tr("Dictar")}</button>}<span>{pick("Hasta 3 minutos por dictado","Up to 3 minutes per recording")}</span></div><p className="field-help">{reviewHint?pick("Tu voz se convierte en texto usando el servicio del navegador. Hilo no guarda el audio. Revisa lo escrito antes de pulsar Revisar.","Your voice becomes text using your browser service. Hilo does not save audio. Check the text before selecting Review."):pick("Tu voz se convierte en texto usando el servicio del navegador. Hilo no guarda el audio. Revisa lo escrito antes de continuar.","Your voice becomes text using your browser service. Hilo does not save audio. Check the text before continuing.")}</p>{message&&<p className="inline-error" role="status">{message}</p>}</div>;
 }
