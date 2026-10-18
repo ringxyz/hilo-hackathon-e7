@@ -1,12 +1,12 @@
 # Hilo v1.0 · Verificación de entrega
 
-Revisión del 18–19/10/2026, Europe/Madrid. Código funcional: `0f9b7c4d25a2a4d8d1523ea619e684ae2a2547bc`.
+Revisión del 18–19/10/2026, Europe/Madrid. Código funcional: `2b6283573303d294e97d2ef730fbdaa253507fb2`.
 
 | Comprobación | Evidencia actual |
 |---|---|
-| TypeScript | Código 0, 18/10 23:51:41–23:51:45 |
-| Pruebas | Código 0, 17 scripts, 18/10 23:51:45–23:51:59 |
-| Build | Código 0, 18/10 23:51:59–23:52:01 |
+| TypeScript | Código 0, 19/10 00:20:39–00:20:47 |
+| Pruebas | Código 0, 17 scripts, 19/10 00:20:47–00:20:57 |
+| Build | Código 0, 19/10 00:20:57–00:20:59 |
 | Demo | Acceso real por contraseña Hilo y aislamiento por propietario; 15 actividades, pausa, 3 días, 16 fichas y 1 examen |
 | Calendar | Lista real de calendarios y prueba en Ajustes: Conexión comprobada, agenda sincronizada; calendario ficticio seleccionado |
 | Producción | Inicio limpio, Ahora, Solo esto, pausa, captura sin IA, Después, Agenda y Repaso observados con la cuenta real de prueba |
@@ -88,3 +88,6 @@ Fecha: 14 de octubre de 2026. Entorno: Windows, Node 22.16, D1 local y navegador
 | RNF-009 | Demo acotada | Datos sintéticos, acceso privado; PEN-008 sigue pendiente |
 
 Esta entrega es una primera versión funcional. No acredita el MVP completo del hackatón, la eficacia clínica ni el lanzamiento con datos reales de menores.
+
+
+Última corrección incorporada: «Continuar» conserva el borrador hasta guardar o descartar (19/10). Publicación Sites 27, fuente `2a97bc369473bb9f388e4ba64ba86ddc8516ff29`; su código funcional coincide con `2b6283573303d294e97d2ef730fbdaa253507fb2`. La comparación de árboles solo difiere en archivos de documentación/entrega. TypeScript, 17 scripts y build se repitieron correctamente el 19/10, 00:20:39–00:20:59 Europe/Madrid.

@@ -32,3 +32,6 @@ Captura offline en IndexedDB con reintento por cuenta e idempotencia. Las demás
 El jurado puede repetir el recorrido con la cuenta compartida. La idea de Lucía que aparece en el vídeo se retiró después de capturarla; los 15 registros base, la nota y los 12 minutos restantes quedaron restaurados. Verificación de datos y Calendar: 18/10/2026, 23:52 Europe/Madrid; acceso por contraseña y captura sin IA repetidos el 18–19/10. La captura temporal fue retirada después y los 15 registros base se conservaron.
 
 [Índice de los dos Docs, vídeos, capturas actuales y checklist](ENTREGA-V1.md). Credenciales únicamente en la sección 6 del Google Doc técnico existente.
+
+
+Última corrección incorporada: «Continuar» conserva el borrador hasta guardar o descartar (19/10). Publicación Sites 27, fuente `2a97bc369473bb9f388e4ba64ba86ddc8516ff29`; su código funcional coincide con `2b6283573303d294e97d2ef730fbdaa253507fb2`. La comparación de árboles solo difiere en archivos de documentación/entrega. TypeScript, 17 scripts y build se repitieron correctamente el 19/10, 00:20:39–00:20:59 Europe/Madrid.

@@ -46,4 +46,7 @@ Las capturas y evidencias de QA quedan en outputs/, excluido de Git. Las credenc
 
 ## Revalidación de entrega · 18–19/10/2026
 
-El bloqueo del conector descrito en el registro del 16/10 es histórico. Sites devuelve ahora el proyecto activo y versión 26. Se observaron en la URL pública Inicio limpio, cuenta por contraseña, Calendar conectado en Ajustes, captura, Ahora, Solo esto, Agenda y Repaso. TypeScript, 17 scripts y build pasaron el 18/10 a las 23:52. Los límites físicos siguen documentados en VERIFICACION.md.
+El bloqueo del conector descrito en el registro del 16/10 es histórico. Sites devuelve ahora el proyecto activo y versión 27. Se observaron en la URL pública Inicio limpio, cuenta por contraseña, Calendar conectado en Ajustes, captura, Ahora, Solo esto, Agenda y Repaso. TypeScript, 17 scripts y build pasaron el 19/10 a las 00:20. Los límites físicos siguen documentados en VERIFICACION.md.
+
+
+Última corrección incorporada: «Continuar» conserva el borrador hasta guardar o descartar (19/10). Publicación Sites 27, fuente `2a97bc369473bb9f388e4ba64ba86ddc8516ff29`; su código funcional coincide con `2b6283573303d294e97d2ef730fbdaa253507fb2`. La comparación de árboles solo difiere en archivos de documentación/entrega. TypeScript, 17 scripts y build se repitieron correctamente el 19/10, 00:20:39–00:20:59 Europe/Madrid.

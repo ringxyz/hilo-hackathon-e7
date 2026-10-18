@@ -2,7 +2,7 @@
 
 App para guardar pendientes, recuperar el siguiente paso y repasar lo aprendido. V1 para el piloto familiar y el hackatón. Revisión más reciente: [INICIO-LIMPIO-V1.md](docs/INICIO-LIMPIO-V1.md), con Inicio limpio, onboarding y acceso privado observados en producción el 18–19/10/2026. Mejoras posteriores: [REVISION-1H.md](docs/REVISION-1H.md). Cierre histórico del 15/10: [CIERRE-V1.md](docs/CIERRE-V1.md).
 
-**V1 — 19 de octubre de 2026**. Verificación del código y datos: 18/10/2026; cierre documental: 19/10/2026, Europe/Madrid. [App pública](https://hilo-tu-siguiente-paso.waikastudios.chatgpt.site/) · [Documentación técnica](https://docs.google.com/document/d/1YKbDPxQpC3I6OQw4LRvVIahstGaeHNXuuor28Eo0cW4/edit) · [Historial de prompts](https://docs.google.com/document/d/1ModC2RSVul3quD_H7kcXAqlkYZdT8S32DlngnLhiGsY/edit) · [Carpeta de entrega](https://drive.google.com/drive/folders/1H0QxCTqYYIdSRqHcF6seZy7BOIH5yyEs). Los dos MP4 finales de 120 s, la voz, el guion y capturas actuales de la app publicada están compartidos por enlace. [Índice, verificaciones y checklist de entrega](docs/ENTREGA-V1.md). El formulario oficial sigue pendiente de envío.
+**V1 — 19 de octubre de 2026**. Verificación final del código: 19/10/2026; datos revisados el 18–19/10/2026, Europe/Madrid. [App pública](https://hilo-tu-siguiente-paso.waikastudios.chatgpt.site/) · [Documentación técnica](https://docs.google.com/document/d/1YKbDPxQpC3I6OQw4LRvVIahstGaeHNXuuor28Eo0cW4/edit) · [Historial de prompts](https://docs.google.com/document/d/1ModC2RSVul3quD_H7kcXAqlkYZdT8S32DlngnLhiGsY/edit) · [Carpeta de entrega](https://drive.google.com/drive/folders/1H0QxCTqYYIdSRqHcF6seZy7BOIH5yyEs). Los dos MP4 finales de 120 s, la voz, el guion y capturas actuales de la app publicada están compartidos por enlace. [Índice, verificaciones y checklist de entrega](docs/ENTREGA-V1.md). El formulario oficial sigue pendiente de envío.
 
 ## Stack
 
@@ -40,3 +40,6 @@ RLS aísla los datos por propietario. Anthropic y Google usan secretos de servid
 D1 y sus esquemas anteriores se conservan; no se ha migrado automáticamente su contenido a Supabase. No eliminar ese vínculo antes de decidir cómo recuperar posibles datos de 0.1.
 
 El sitio conserva su audiencia pública; el contenido personal requiere autenticación. Google permanece en Testing. Consultar docs/CONFIGURACION.md y docs/V1-VERIFICACION.md para los pendientes y las pruebas reales. El código se mantiene en el repositorio del proyecto; la publicación de la app no acredita el envío formal al concurso ni la entrega del vídeo.
+
+
+Última corrección incorporada: «Continuar» conserva el borrador hasta guardar o descartar (19/10). Publicación Sites 27, fuente `2a97bc369473bb9f388e4ba64ba86ddc8516ff29`; su código funcional coincide con `2b6283573303d294e97d2ef730fbdaa253507fb2`. La comparación de árboles solo difiere en archivos de documentación/entrega. TypeScript, 17 scripts y build se repitieron correctamente el 19/10, 00:20:39–00:20:59 Europe/Madrid.

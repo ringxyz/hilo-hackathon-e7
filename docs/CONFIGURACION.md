@@ -14,7 +14,7 @@ Reprogramar muestra el destino y requiere confirmación. En citas futuras suma a
 
 Referencias vigentes: `docs/CIERRE-V1.md`, `docs/V1-VERIFICACION.md`, `docs/VERIFICACION.md` y `docs/ENTREGA-V1.md`. Node.js 22.13+, `npm ci`, `npm run typecheck`, `npm test`, `npm run build`; desarrollo en dos terminales con `npm run dev:api` y `npm run dev`.
 
-El montaje de entrega no requiere claves de Flow ni Higgsfield para ejecutar Hilo. La demo final usa capturas reales y voz de Google Flow (Algieba), montadas con Higgsedit. Los MP4, el guion y las capturas están enlazados en `docs/ENTREGA-V1.md`. No se incorporan voces, credenciales ni archivos privados al código servido. Las tres comprobaciones del repositorio terminaron con código 0 el 18/10/2026 a las 23:52:01 Europe/Madrid (17 scripts de pruebas). El dictado vigente admite tres minutos y recupera segmentos; el límite de 90 segundos que figura en el archivo histórico no describe esta versión. Los borradores de captura se conservan por cuenta y modo; cerrar pide una decisión explícita.
+El montaje de entrega no requiere claves de Flow ni Higgsfield para ejecutar Hilo. La demo final usa capturas reales y voz de Google Flow (Algieba), montadas con Higgsedit. Los MP4, el guion y las capturas están enlazados en `docs/ENTREGA-V1.md`. No se incorporan voces, credenciales ni archivos privados al código servido. Las tres comprobaciones del repositorio terminaron con código 0 el 19/10/2026 a las 00:20:59 Europe/Madrid (17 scripts de pruebas). El dictado vigente admite tres minutos y recupera segmentos; el límite de 90 segundos que figura en el archivo histórico no describe esta versión. Los borradores de captura se conservan por cuenta y modo; cerrar pide una decisión explícita.
 
 ## ARCHIVO — no usar para evaluación: configuración histórica 0.2
 
@@ -64,3 +64,6 @@ Perfiles 6–12 y 13–17 requieren acompañamiento y autorización declarada de
 Asesor Supabase: corregida la ejecución pública del activador de RLS. Persiste el aviso de pg_net registrado en public; sus objetos de red están en net y no admite traslado directo. No se reinstaló la extensión ni se borraron sus colas. [Aviso](https://supabase.com/docs/guides/database/database-linter?lint=0014_extension_in_public).
 
 hilo_take_ai_credit es SECURITY DEFINER invocable intencionadamente por usuarios autenticados: limita su propia cuota con auth.uid(), sin aceptar otro usuario. Límite 30 comprobado. Tablas de cola/cuotas sin políticas: cierre intencional al cliente. [Detalle del asesor](https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable).
+
+
+Última corrección incorporada: «Continuar» conserva el borrador hasta guardar o descartar (19/10). Publicación Sites 27, fuente `2a97bc369473bb9f388e4ba64ba86ddc8516ff29`; su código funcional coincide con `2b6283573303d294e97d2ef730fbdaa253507fb2`. La comparación de árboles solo difiere en archivos de documentación/entrega. TypeScript, 17 scripts y build se repitieron correctamente el 19/10, 00:20:39–00:20:59 Europe/Madrid.

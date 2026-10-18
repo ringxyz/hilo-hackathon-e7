@@ -1,12 +1,12 @@
 # Entrega Hilo V1 · Hackathon E7
 
-Etiqueta solicitada: **V1 — 19 de octubre de 2026**, app **v1.0**. Código/datos revisados el **18/10/2026**; cierre documental y audiovisual el **19/10/2026, Europe/Madrid**. Código funcional publicado: `0f9b7c4d25a2a4d8d1523ea619e684ae2a2547bc`, Sites 26, despliegue succeeded. No se ha enviado el formulario oficial.
+Etiqueta solicitada: **V1 — 19 de octubre de 2026**, app **v1.0**. Código/datos revisados el **18/10/2026**; cierre documental y audiovisual el **19/10/2026, Europe/Madrid**. Código funcional publicado: `2b6283573303d294e97d2ef730fbdaa253507fb2`, Sites 27, despliegue succeeded. No se ha enviado el formulario oficial.
 
 ## Acceso y materiales
 
 - [Aplicación pública](https://hilo-tu-siguiente-paso.waikastudios.chatgpt.site/).
 - [Google Doc técnico existente](https://docs.google.com/document/d/1YKbDPxQpC3I6OQw4LRvVIahstGaeHNXuuor28Eo0cW4/edit): acceso de evaluación y contraseña Hilo, exclusivamente en su sección 6; no es una contraseña de Google.
-- [Google Doc de prompts](https://docs.google.com/document/d/1ModC2RSVul3quD_H7kcXAqlkYZdT8S32DlngnLhiGsY/edit): registros 1–55 conservados y 24 mensajes reales posteriores, numerados 56–79; referencias y notas de implementación diferenciadas.
+- [Google Doc de prompts](https://docs.google.com/document/d/1ModC2RSVul3quD_H7kcXAqlkYZdT8S32DlngnLhiGsY/edit): registros 1–55 conservados y 25 mensajes reales posteriores, numerados 56–80; referencias y notas de implementación diferenciadas.
 - [Repositorio público](https://github.com/ringxyz/hilo-hackathon-e7). El SHA del commit de cierre figura en el Doc técnico y en el índice de Drive.
 - [Carpeta compartida de entrega](https://drive.google.com/drive/folders/1H0QxCTqYYIdSRqHcF6seZy7BOIH5yyEs): acceso de lectura por enlace comprobado en los Docs y archivos finales.
 - [MP4 vertical, 1080×1920](https://drive.google.com/file/d/1qjF2b3XoMFwJZYLKwZ1XgkWfCGuOU8ze/view).
@@ -27,7 +27,7 @@ Etiqueta solicitada: **V1 — 19 de octubre de 2026**, app **v1.0**. Código/dat
 
 ## Verificación
 
-`npm run typecheck`, `npm test` y `npm run build`: código 0, **18/10/2026, 23:51:41–23:52:01 Europe/Madrid**. Diecisiete scripts. Logs y fechas en `outputs/hackathon/revision-entrega-2026-10-18/`, excluidos de Git.
+`npm run typecheck`, `npm test` y `npm run build`: código 0, **19/10/2026, 00:20:39–00:20:59 Europe/Madrid**. Diecisiete scripts. Logs y fechas en `outputs/hackathon/revision-entrega-2026-10-18/`, excluidos de Git.
 
 Cuenta real: login por contraseña, aislamiento por propietario, 15 actividades, sesión pausada con 12 minutos restantes, 3 días, 16 fichas y 1 examen. Calendar respondió con la lista real y «Conexión comprobada. Agenda sincronizada.». Se observó Inicio limpio y se repitió el acceso por formulario. La idea ficticia de Lucía se guardó sin cambiar tarea/tiempo y se retiró después. No se reinicializó la muestra.
 
@@ -60,3 +60,6 @@ Inscripción en plazo y confirmación: declaradas por el participante. **Envío 
 Micrófono físico, instalación PWA/push con app cerrada o pantalla bloqueada en Android/iPhone, renovación OAuth prolongada y restricciones Family Link/Workspace. Google continúa en Testing. Sin certificación WCAG, eficacia clínica demostrada ni revisión educativa humana exhaustiva. Captura offline limitada a texto por cuenta; las demás operaciones necesitan red. Sincronización Calendar manual y soporte parcial de excepciones externas. Véanse `VERIFICACION.md` y `CIERRE-V1.md`.
 
 La carpeta final contiene solo materiales vigentes. Los materiales anteriores y de producción se conservan fuera de ella, en Drive con el prefijo **ARCHIVO — no usar para evaluación**.
+
+
+Última corrección incorporada: «Continuar» conserva el borrador hasta guardar o descartar (19/10). Publicación Sites 27, fuente `2a97bc369473bb9f388e4ba64ba86ddc8516ff29`; su código funcional coincide con `2b6283573303d294e97d2ef730fbdaa253507fb2`. La comparación de árboles solo difiere en archivos de documentación/entrega. TypeScript, 17 scripts y build se repitieron correctamente el 19/10, 00:20:39–00:20:59 Europe/Madrid.
