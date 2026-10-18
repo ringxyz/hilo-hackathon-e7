@@ -6,6 +6,7 @@ import type { Activity, FocusSession, StudyDay } from '../src/types';
 import * as google from './google';
 import * as ai from './ai';
 import {prepareDayDrafts} from './day-plan';
+import {deduplicateCaptureDrafts} from '../src/capture-deduplication';
 import { profileSchema as profile } from './profile';
 import { publicResponse } from './public-pages';
 const timezone=z.string().refine(v=>{try{new Intl.DateTimeFormat('es',{timeZone:v});return true;}catch{return false;}},'Zona horaria no válida.');
@@ -51,8 +52,10 @@ export async function handle(request:Request,env:Env):Promise<Response>{
  if(path==='/api/demo'){const s=await repo.state();if(s.activities.length)throw new ApiError('Tu espacio ya tiene actividades.',409);dbResult(await repo.db.rpc('hilo_capture',{request_id:crypto.randomUUID(),items:demoActivities(localDate(new Date(),s.settings.timezone),s.settings.profile.audience,repo.language)}));await repo.saveSettings({...s.settings,demo:true});return result();}
  if(path==='/api/capture/parse'){
   const input=z.object({text:z.string().trim().min(1).max(6000),capturedAt:z.number().min(0).max(Date.now()+60000),tomorrow:z.boolean().default(false),useAI:z.boolean().default(false),dayPlan:z.boolean().default(false),energy:z.enum(['low','medium','high']).default('medium')}).parse(b),s=await repo.settings(),today=localDate(new Date(input.capturedAt),s.timezone);
-  if(input.useAI){const drafts=await ai.organize(repo,input.text,today,input.tomorrow,input.energy),prepared=input.dayPlan?prepareDayDrafts(drafts,s):drafts.map(d=>({...activitySchema.parse(d),ambiguous:typeof d.ambiguous==='string'?d.ambiguous:''}));return Response.json({drafts:prepared,studySuggestion:input.dayPlan&&s.profile.studying!==false&&(s.profile.studying||s.profile.course)?prepared.filter(d=>d.purpose==='study').map(d=>d.title).join(', ')||s.profile.subjects||s.profile.course:null});}
-  const drafts=parseCapture(input.text,today,input.tomorrow,repo.language);return Response.json({drafts:input.dayPlan?prepareDayDrafts(drafts as Record<string,unknown>[],s):drafts,studySuggestion:null});
+  const response=input.useAI?await ai.organize(repo,input.text,today,input.tomorrow,input.energy):parseCapture(input.text,today,input.tomorrow,repo.language),first=deduplicateCaptureDrafts(response);
+  const prepared=input.dayPlan?prepareDayDrafts(first.drafts as Record<string,unknown>[],s):first.drafts.map(d=>input.useAI?{...activitySchema.parse(d),ambiguous:typeof d.ambiguous==='string'?d.ambiguous:''}:d);
+  const final=deduplicateCaptureDrafts(prepared);
+  return Response.json({drafts:final.drafts,deduplicated:first.removed+final.removed,studySuggestion:input.useAI&&input.dayPlan&&s.profile.studying!==false&&(s.profile.studying||s.profile.course)?final.drafts.filter(d=>d.purpose==='study').map(d=>d.title).join(', ')||s.profile.subjects||s.profile.course:null});
  }
  if(path==='/api/capture/save'){const input=z.object({requestId:z.string().uuid(),activities:z.array(activitySchema).min(1).max(24),dayPlan:z.boolean().default(false),energy:z.enum(['low','medium','high']).optional()}).parse(b);const settings=await repo.settings();let items;try{items=input.activities.map(a=>scheduledActivity({...a,id:a.id||crypto.randomUUID(),travelMinutes:a.travelMinutes??settings.defaultTravelMinutes??30},settings.timezone));}catch(e){throw new ApiError((e as Error).message);}dbResult(await repo.db.rpc(input.dayPlan&&input.energy?'hilo_capture_day_energy':input.dayPlan?'hilo_capture_day':'hilo_capture',{request_id:input.requestId,items,...(input.dayPlan&&input.energy?{energy:input.energy}:{})}));return result();}
  if(path==='/api/activity/update'){const a=await repo.activity(z.string().uuid().parse(b.id));if(a.source==='google')throw new ApiError('Esta cita se edita en Google.',403);let data;try{data=scheduledActivity(activitySchema.parse({...a,...b.activity,id:a.id}),(await repo.settings()).timezone);}catch(e){if(e instanceof z.ZodError)throw e;throw new ApiError((e as Error).message);}await repo.saveActivity({...a,...data,sync:a.googleId?'pending':undefined} as Activity,z.number().int().parse(b.revision));return result();}

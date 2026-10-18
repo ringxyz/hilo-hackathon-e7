@@ -1,0 +1,14 @@
+import assert from 'node:assert/strict';
+import {build} from 'esbuild';
+await build({stdin:{contents:`export {deduplicateCaptureDrafts} from './src/capture-deduplication';`,resolveDir:process.cwd(),loader:'ts'},outfile:'.sites-runtime/tests/capture-deduplication.mjs',bundle:true,platform:'node',format:'esm',logLevel:'silent'});
+const {deduplicateCaptureDrafts}=await import('../.sites-runtime/tests/capture-deduplication.mjs');
+const base={title:'Paseo de la tarde',kind:'task',date:'2026-10-18',time:null,recurrence:'none'};
+const same={...base,title:'  PASEO   de la tarde. '};
+let result=deduplicateCaptureDrafts([base,same,{...base,date:'2026-10-19'},{...base,time:'18:00'}]);
+assert.equal(result.removed,1);
+assert.equal(result.drafts.length,3);
+result=deduplicateCaptureDrafts([{...base,title:'Paseo de la tarde'}],[base]);
+assert.equal(result.removed,1);
+assert.equal(result.drafts.length,0);
+assert.equal(deduplicateCaptureDrafts([{...base,title:''},{...base,title:'...'}]).drafts.length,2);
+console.log('Capture deduplication passed: repeat mentions merge only when normalized title, type, date, time and recurrence match.');

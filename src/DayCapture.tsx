@@ -10,19 +10,20 @@ import { recommendFirstTaskForToday, adaptDayToEnergy } from './day-capture';
 import { pick } from './i18n';
 import {readDraft,useDraftPersistence,DraftExit} from './drafts';
 import {captureExample} from './profile-context';
+import {deduplicateCaptureDrafts} from './capture-deduplication';
 import type { Activity, AppState, Energy } from './types';
 
 type Draft=Partial<Activity>&{id:string;ambiguous?:string;decision?:'add'|'discard'};
-type SavedDraft={text:string;drafts:Draft[];review:boolean;editing:string|null;study:string|null;energy:Energy;requestId:string;rawRequestId:string;capturedAt:number};
+type SavedDraft={text:string;drafts:Draft[];review:boolean;editing:string|null;study:string|null;energy:Energy;requestId:string;rawRequestId:string;capturedAt:number;deduplicated?:number;alreadyPlanned?:number};
 
 export function DayCapture({state,busy,error,onClose,onSave,onRawSave,mode='day'}:{state:AppState;busy:boolean;error:string;onClose:()=>void;onRawSave:(text:string,id:string)=>Promise<boolean>;mode?:'day'|'idea';onSave:(activities:Partial<Activity>[],requestId:string,energy:Energy)=>Promise<boolean>}){
   const initial=useRef(readDraft<SavedDraft>(state.ownerId,mode)),saved=initial.current;
-  const [text,setText]=useState(saved?.text||''),[drafts,setDrafts]=useState<Draft[]>(saved?.drafts||[]),[review,setReview]=useState(saved?.review||false),[editing,setEditing]=useState<string|null>(saved?.editing||null),[working,setWorking]=useState(false),[recording,setRecording]=useState(false),[message,setMessage]=useState(''),[study,setStudy]=useState<string|null>(saved?.study||null),[exit,setExit]=useState(false);
+  const [text,setText]=useState(saved?.text||''),[drafts,setDrafts]=useState<Draft[]>(saved?.drafts||[]),[review,setReview]=useState(saved?.review||false),[editing,setEditing]=useState<string|null>(saved?.editing||null),[working,setWorking]=useState(false),[recording,setRecording]=useState(false),[message,setMessage]=useState(''),[study,setStudy]=useState<string|null>(saved?.study||null),[exit,setExit]=useState(false),[deduplicated,setDeduplicated]=useState(saved?.deduplicated||0),[alreadyPlanned,setAlreadyPlanned]=useState(saved?.alreadyPlanned||0);
   const requestId=useRef(saved?.requestId||crypto.randomUUID()),capturedAt=useRef(saved?.capturedAt||Date.now()),today=localDate(new Date(capturedAt.current),state.settings.timezone),ai=state.aiConfigured&&state.settings.profile.aiConsent;
   const [energy,setEnergy]=useState<Energy>(saved?.energy||(state.settings.dayEnergy?.date===today?state.settings.dayEnergy.value:'medium'));
   const existing=state.activities.filter(a=>a.kind==='task'&&occursOn(a,today)&&!isDone(a,today)).length;
   const rawRequestId=useRef(saved?.rawRequestId||crypto.randomUUID()),isDay=mode==='day';
-  const persistence=useDraftPersistence(state.ownerId,mode,{text,drafts,review,editing,study,energy,requestId:requestId.current,rawRequestId:rawRequestId.current,capturedAt:capturedAt.current},!!text.trim()||drafts.length>0);
+  const persistence=useDraftPersistence(state.ownerId,mode,{text,drafts,review,editing,study,energy,requestId:requestId.current,rawRequestId:rawRequestId.current,capturedAt:capturedAt.current,deduplicated,alreadyPlanned},!!text.trim()||drafts.length>0);
   function requestClose(){if(working||busy)return;if(text.trim()||drafts.length)setExit(true);else onClose();}
   const empty=!text.trim(),waiting=working||busy;
   const rawReason=empty?pick('Escribe o dicta algo para continuar.','Write or dictate something to continue.'):recording?pick('Detén el dictado y revisa tu texto para continuar.','Stop dictation and review your text to continue.'):waiting?pick('Espera a que termine la acción en curso.','Wait for the current action to finish.'):'';
@@ -33,10 +34,12 @@ export function DayCapture({state,busy,error,onClose,onSave,onRawSave,mode='day'
     setWorking(true);setMessage('');
     try{
       if(aiReason)return;
-      const result=await api<{drafts:Partial<Activity>[];studySuggestion:string|null}>('/api/capture/parse',{text,capturedAt:capturedAt.current,tomorrow:false,useAI:true,dayPlan:true,energy});
-      const identified=result.drafts.map(d=>({...d,id:crypto.randomUUID()}));
+      const result=await api<{drafts:Partial<Activity>[];studySuggestion:string|null;deduplicated?:number}>('/api/capture/parse',{text,capturedAt:capturedAt.current,tomorrow:false,useAI:true,dayPlan:true,energy});
+      const pending=state.activities.filter(a=>a.status==='pending'&&!isDone(a,today));
+      const combined=deduplicateCaptureDrafts(result.drafts,pending);
+      const identified=combined.drafts.map(d=>({...d,id:crypto.randomUUID()}));
       const proposed=isDay?adaptDayToEnergy(recommendFirstTaskForToday(identified,today),today,energy,existing):identified;
-      setDrafts(proposed);setStudy(result.studySuggestion);setReview(true);
+      setDrafts(proposed);setStudy(result.studySuggestion);setDeduplicated(result.deduplicated||0);setAlreadyPlanned(combined.removed);setReview(true);
     }catch(e){setMessage((e as Error).message);}
     finally{setWorking(false);}
   }
@@ -81,6 +84,8 @@ export function DayCapture({state,busy,error,onClose,onSave,onRawSave,mode='day'
         {aiReason&&<p id="capture-blocked" className="field-help" role="status">{aiReason}</p>}
       </>:<>
         <p className="capture-review-notice">{pick('Nada se guardó todavía. Revisa cada propuesta y elige.','Nothing has been saved yet. Review each suggestion and choose.')}</p>
+        {deduplicated>0&&<p className="field-help" role="status">{pick(`He reunido ${deduplicated} ${deduplicated===1?'mención repetida':'menciones repetidas'} dentro de tu relato.`,`I combined ${deduplicated} repeated ${deduplicated===1?'mention':'mentions'} from your story.`)}</p>}
+        {alreadyPlanned>0&&<p className="field-help" role="status">{pick(`No añadí ${alreadyPlanned===1?'una tarea':'tareas'} porque ${alreadyPlanned===1?'ya aparece':'ya aparecen'} en tu lista pendiente.`,`I skipped ${alreadyPlanned===1?'one task':'tasks'} because ${alreadyPlanned===1?'it is':'they are'} already on your pending list.`)}</p>}
         {priority&&<p className="plan-priority"><strong>{pick('Para empezar hoy:','Suggested first step today:')}</strong> {priority.title}</p>}
         {isDay&&energy==='low'&&<p className="field-help">{pick(`Energía baja: como máximo ${Math.max(0,3-existing)} tareas nuevas para hoy, además de tus citas. Pausas de 10 min entre bloques al reorganizar. Lo demás te espera en Después.`, `Low energy: up to ${Math.max(0,3-existing)} new tasks today, plus your appointments. Replanning leaves 10-minute breaks between blocks. The rest waits in Later.`)}</p>}
         <div className="day-plan-list">
