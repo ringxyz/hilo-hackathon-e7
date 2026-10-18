@@ -70,7 +70,7 @@ export function DayCapture({state,busy,error,onClose,onSave,onRawSave,mode='day'
   }
 
   return <Modal title={restoring?pick('Tienes un borrador guardado.','You have a saved draft.'):review?pick('Revisa tus tareas','Review your tasks'):isDay?pick('Cuéntame tu día','Tell me about your day'):pick('Guardar idea','Save an idea')} onClose={requestClose} wide={review}>
-    {restoring?<DraftRestore onContinue={()=>{persistence.clear();setRestoring(false);}} onDiscard={()=>{persistence.clear();setText('');setDrafts([]);setReview(false);setEditing(null);setStudy(null);setDeduplicated(0);setAlreadyPlanned(0);setEnergy(state.settings.dayEnergy?.date===today?state.settings.dayEnergy.value:'medium');requestId.current=crypto.randomUUID();rawRequestId.current=crypto.randomUUID();capturedAt.current=Date.now();setRestoring(false);}}/>:<>
+    {restoring?<DraftRestore onContinue={()=>setRestoring(false)} onDiscard={()=>{persistence.clear();setText('');setDrafts([]);setReview(false);setEditing(null);setStudy(null);setDeduplicated(0);setAlreadyPlanned(0);setEnergy(state.settings.dayEnergy?.date===today?state.settings.dayEnergy.value:'medium');requestId.current=crypto.randomUUID();rawRequestId.current=crypto.randomUUID();capturedAt.current=Date.now();setRestoring(false);}}/>:<>
     <div className="day-capture">
       {!review?<>
         {isDay&&<fieldset className="energy-picker"><legend>{pick('¿Cómo está tu energía hoy?','How is your energy today?')}</legend><div className="choice-row">{(['low','medium','high'] as const).map(e=><button type="button" key={e} aria-pressed={e===energy} onClick={()=>setEnergy(e)}>{e==='low'?pick('Baja','Low'):e==='medium'?pick('Media','Medium'):pick('Alta','High')}</button>)}</div></fieldset>}
