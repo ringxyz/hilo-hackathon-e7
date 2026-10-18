@@ -9,6 +9,7 @@ export function createSpeechSession({ create, initialText, onText, onActive, onE
 }) {
   let engine: any, active = false, disposed = false, networkRetries = 0, restarts = 0;
   let committed = initialText.trim(), current = '', error = '';
+  let receivedSpeech = false;
   let deadline: ReturnType<typeof setTimeout> | undefined, retry: ReturnType<typeof setTimeout> | undefined, opening: ReturnType<typeof setTimeout> | undefined;
   const text = () => [committed, current].filter(Boolean).join('\n').slice(0, 6000);
   const commit = () => { committed = text(); current = ''; };
@@ -31,11 +32,15 @@ export function createSpeechSession({ create, initialText, onText, onActive, onE
     r.onresult = (event: any) => {
       if (!valid()) return;
       current = transcriptFromResults(event.results);
+      if (current.trim()) receivedSpeech = true;
       onText(text());
     };
     r.onerror = (event: any) => {
       if (!valid() || !active) return;
       error = String(event.error || 'unknown');
+      // Silence describes the current engine, not the whole dictation. Wait for
+      // its final results/end before deciding whether this session heard nothing.
+      if (error === 'no-speech') return;
       // Never log the transcript, audio, profile or provider error message.
       console.warn('[Hilo dictation]', error);
       if (error === 'network' && networkRetries < 1) return;
@@ -48,13 +53,17 @@ export function createSpeechSession({ create, initialText, onText, onActive, onE
       commit();
       engine = undefined;
       if (!active) { engine = undefined; return; }
+      if (error === 'no-speech') {
+        if (!receivedSpeech) onError('no-speech');
+        finish(); return;
+      }
       if (error === 'network' && networkRetries++ < 1) {
         retry = schedule(listen, 600); return;
       }
       // Some mobile engines end after a sentence despite continuous=true.
       // Resume only when speech arrived, never repeatedly reopen a silent mic.
       if (!error && heard && restarts++ < 30) { retry = schedule(listen, 200); return; }
-      if (!error && !heard) onError('no-speech');
+      if (!error && !receivedSpeech) onError('no-speech');
       finish(); engine = undefined;
     };
     try {

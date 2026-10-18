@@ -9,3 +9,7 @@
 - Physical microphone accuracy and end-to-end recognition in the user's external browser require a spoken test on that device. Simulated recognition events are lifecycle tests, not a real speech-to-text test.
 
 Reference: https://developer.mozilla.org/en-US/docs/Web/API/SpeechRecognitionErrorEvent/error
+
+## Silence after successful dictation
+
+Track whether the current user-started session produced a non-empty final transcript, across automatic engine restarts. A `no-speech` event or empty engine end now shows the missing-voice warning only if the entire session produced no text. Evaluate explicit silence at `onend` so an already-queued final result can arrive first. Existing typed text does not count as newly recognized speech. Permission, connection and microphone failures remain visible. Regression cases cover same-engine silence, quiet restarted engines, late final results, manual stop and genuinely empty dictation.

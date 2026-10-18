@@ -31,6 +31,24 @@ for(const code of ['no-speech','not-allowed','audio-capture','service-not-allowe
   assert.ok(speechErrorText(code).length>30);assert.notEqual(speechErrorText(code),speechErrorText(code,true));
 }
 // A pending permission request must not leave the UI locked forever.
+// Silence after a successful transcript is normal, including after an automatic restart.
+{
+  const f=fixture();f.session.start();const r=f.engines[0];r.onstart();f.result(r,'Enviar el presupuesto.');
+  r.onerror({error:'no-speech'});r.onend();
+  assert.deepEqual(f.errors,[]);assert.equal(f.texts.at(-1),'Mi nota\nEnviar el presupuesto.');assert.equal(f.states.at(-1),false);assert.equal(f.timers.size,0);
+}
+for(const explicitError of [false,true]){
+  const f=fixture();f.session.start();const r=f.engines[0];r.onstart();f.result(r,'Recoger el paquete.');r.onend();f.fire(200);
+  const second=f.engines[1];second.onstart();if(explicitError)second.onerror({error:'no-speech'});second.onend();
+  assert.deepEqual(f.errors,[]);assert.equal(f.texts.at(-1),'Mi nota\nRecoger el paquete.');assert.equal(f.states.at(-1),false);assert.equal(f.timers.size,0);
+}
+// Pre-existing written text is not evidence that the current dictation heard speech.
+{const f=fixture();f.session.start();f.engines[0].onstart();f.engines[0].onend();assert.deepEqual(f.errors,['no-speech']);assert.equal(f.texts.length,0);}
+// A final result queued after the silence event still counts before the engine ends.
+{const f=fixture();f.session.start();const r=f.engines[0];r.onstart();r.onerror({error:'no-speech'});f.result(r,'Llamar a Ana.');r.onend();assert.deepEqual(f.errors,[]);assert.equal(f.texts.at(-1),'Mi nota\nLlamar a Ana.');}
+// A manual stop must not raise a silence warning, even when the engine sends one late.
+{const f=fixture();f.session.start();const r=f.engines[0];r.onstart();f.session.stop();r.onerror({error:'no-speech'});r.onend();assert.deepEqual(f.errors,[]);}
+
 {const f=fixture();f.session.start();f.fire(10000);assert.deepEqual(f.errors,['start-timeout']);assert.equal(f.engines[0].aborted,true);assert.equal(f.states.at(-1),false);}
 // Cancel restores the original text; callbacks from a disposed session do nothing.
 {const f=fixture();f.session.start();f.result(f.engines[0],'No guardar');f.session.stop(true);f.result(f.engines[0],'Tardío');assert.equal(f.texts.at(-1),'Mi nota');assert.equal(f.timers.size,0);}
