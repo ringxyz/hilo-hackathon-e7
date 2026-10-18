@@ -8,3 +8,5 @@ import "./clean-home.css";
 createRoot(document.getElementById("root")!).render(<React.StrictMode><AppErrorBoundary><App/></AppErrorBoundary></React.StrictMode>);
 if("serviceWorker" in navigator&&!import.meta.env.DEV)navigator.serviceWorker.register("/sw.js").catch(()=>{});
 import "./focus-support.css";
+
+import './recovery.css';

@@ -1,5 +1,7 @@
 // Spanish is the source language. User-authored activities and study content are never translated implicitly.
 export const english: Record<string,string> = Object.fromEntries(`
+Revisa y confirma el nuevo horario antes de guardar.|||Review and confirm the new schedule before saving.
+El horario cambió. Revisa la nueva propuesta antes de guardar.|||The schedule changed. Review the new proposal before saving.
 Tu correo no está en la lista de prueba de Hilo. Pide acceso para probar.|||Your email is not on the Hilo test list. Ask for access to try it.
 No se pudo comprobar el acceso a la prueba. Inténtalo de nuevo.|||Could not check access to the pilot. Please try again.
 Completa los pasos Conocerme y Tu día a día.|||Complete About me and Your everyday life.

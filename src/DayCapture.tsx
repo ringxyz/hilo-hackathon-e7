@@ -8,20 +8,26 @@ import { api } from './api';
 import { addDays, departureTime, isDone, localDate, occursOn } from './domain';
 import { recommendFirstTaskForToday, adaptDayToEnergy } from './day-capture';
 import { pick } from './i18n';
+import {readDraft,useDraftPersistence,DraftExit} from './drafts';
+import {captureExample} from './profile-context';
 import type { Activity, AppState, Energy } from './types';
 
 type Draft=Partial<Activity>&{id:string;ambiguous?:string;decision?:'add'|'discard'};
+type SavedDraft={text:string;drafts:Draft[];review:boolean;editing:string|null;study:string|null;energy:Energy;requestId:string;rawRequestId:string;capturedAt:number};
 
 export function DayCapture({state,busy,error,onClose,onSave,onRawSave,mode='day'}:{state:AppState;busy:boolean;error:string;onClose:()=>void;onRawSave:(text:string,id:string)=>Promise<boolean>;mode?:'day'|'idea';onSave:(activities:Partial<Activity>[],requestId:string,energy:Energy)=>Promise<boolean>}){
-  const [text,setText]=useState(''),[drafts,setDrafts]=useState<Draft[]>([]),[review,setReview]=useState(false),[editing,setEditing]=useState<string|null>(null),[working,setWorking]=useState(false),[recording,setRecording]=useState(false),[message,setMessage]=useState(''),[study,setStudy]=useState<string|null>(null);
-  const requestId=useRef(crypto.randomUUID()),capturedAt=useRef(Date.now()),today=localDate(new Date(capturedAt.current),state.settings.timezone),ai=state.aiConfigured&&state.settings.profile.aiConsent;
-  const [energy,setEnergy]=useState<Energy>(state.settings.dayEnergy?.date===today?state.settings.dayEnergy.value:'medium');
+  const initial=useRef(readDraft<SavedDraft>(state.ownerId,mode)),saved=initial.current;
+  const [text,setText]=useState(saved?.text||''),[drafts,setDrafts]=useState<Draft[]>(saved?.drafts||[]),[review,setReview]=useState(saved?.review||false),[editing,setEditing]=useState<string|null>(saved?.editing||null),[working,setWorking]=useState(false),[recording,setRecording]=useState(false),[message,setMessage]=useState(''),[study,setStudy]=useState<string|null>(saved?.study||null),[exit,setExit]=useState(false);
+  const requestId=useRef(saved?.requestId||crypto.randomUUID()),capturedAt=useRef(saved?.capturedAt||Date.now()),today=localDate(new Date(capturedAt.current),state.settings.timezone),ai=state.aiConfigured&&state.settings.profile.aiConsent;
+  const [energy,setEnergy]=useState<Energy>(saved?.energy||(state.settings.dayEnergy?.date===today?state.settings.dayEnergy.value:'medium'));
   const existing=state.activities.filter(a=>a.kind==='task'&&occursOn(a,today)&&!isDone(a,today)).length;
-  const rawRequestId=useRef(crypto.randomUUID()),isDay=mode==='day';
+  const rawRequestId=useRef(saved?.rawRequestId||crypto.randomUUID()),isDay=mode==='day';
+  const persistence=useDraftPersistence(state.ownerId,mode,{text,drafts,review,editing,study,energy,requestId:requestId.current,rawRequestId:rawRequestId.current,capturedAt:capturedAt.current},!!text.trim()||drafts.length>0);
+  function requestClose(){if(working||busy)return;if(text.trim()||drafts.length)setExit(true);else onClose();}
   const empty=!text.trim(),waiting=working||busy;
   const rawReason=empty?pick('Escribe o dicta algo para continuar.','Write or dictate something to continue.'):recording?pick('Detén el dictado y revisa tu texto para continuar.','Stop dictation and review your text to continue.'):waiting?pick('Espera a que termine la acción en curso.','Wait for the current action to finish.'):'';
   const aiReason=rawReason||(!navigator.onLine?pick('Sin conexión. Puedes guardar tal cual; para revisar con IA necesitas internet.','Offline. You can save as-is; AI review needs internet.'):!ai?pick('La IA no está activada. Puedes guardar tal cual o activar la IA en Ajustes.','AI is not enabled. Save as-is or enable AI in Settings.'):'');
-  async function saveRaw(){if(rawReason)return;setWorking(true);setMessage('');try{if(await onRawSave(text,rawRequestId.current))onClose();}catch(e){setMessage((e as Error).message);}finally{setWorking(false);}}
+  async function saveRaw(){if(rawReason)return;setWorking(true);setMessage('');try{if(await onRawSave(text,rawRequestId.current)){persistence.clear();onClose();}}catch(e){setMessage((e as Error).message);}finally{setWorking(false);}}
 
   async function propose(){
     setWorking(true);setMessage('');
@@ -56,16 +62,16 @@ export function DayCapture({state,busy,error,onClose,onSave,onRawSave,mode='day'
     const items=chosen.map(({ambiguous,decision,...d})=>!d.date
       ?{...d,date:null,time:null,reminder:false,recurrence:'none' as const}
       :{...d,time:d.time||null,reminder:!!d.time&&!!d.reminder});
-    if(await onSave(items,requestId.current,energy))onClose();
+    if(await onSave(items,requestId.current,energy)){persistence.clear();onClose();}
   }
 
-  return <Modal title={review?pick('Revisa tus tareas','Review your tasks'):isDay?pick('Cuéntame tu día','Tell me about your day'):pick('Guardar idea','Save an idea')} onClose={()=>{if(!waiting)onClose();}} wide={review}>
+  return <Modal title={review?pick('Revisa tus tareas','Review your tasks'):isDay?pick('Cuéntame tu día','Tell me about your day'):pick('Guardar idea','Save an idea')} onClose={requestClose} wide={review}>
     <div className="day-capture">
       {!review?<>
         {isDay&&<fieldset className="energy-picker"><legend>{pick('¿Cómo está tu energía hoy?','How is your energy today?')}</legend><div className="choice-row">{(['low','medium','high'] as const).map(e=><button type="button" key={e} aria-pressed={e===energy} onClick={()=>setEnergy(e)}>{e==='low'?pick('Baja','Low'):e==='medium'?pick('Media','Medium'):pick('Alta','High')}</button>)}</div></fieldset>}
         <p className="capture-guide">{pick('1. Dicta o escribe · 2. Revisa tu texto · 3. Pulsa Revisar · 4. Acepta o descarta cada tarea','1. Dictate or write · 2. Review your text · 3. Select Review · 4. Accept or discard each task')}</p>
         <label className="field">{pick('Te leo','I’m listening')}
-          <textarea autoFocus rows={6} maxLength={6000} value={text} onChange={e=>setText(e.target.value)} placeholder={state.settings.profile.audience==='child'?pick('¿Qué tienes hoy? Puedes contarlo como quieras.','What is happening today? Tell it your way.'):state.settings.profile.studying?pick('Hoy tengo clase a las 9:00, paseo a las 19:30 y quiero repasar fracciones…','Class at 9:00, a walk at 19:30 and I want to review fractions…'):pick('Hoy tengo una reunión a las 10:00 y quiero comprar un regalo…','A meeting at 10:00 today, and I want to buy a present…')}/>
+          <textarea autoFocus rows={6} maxLength={6000} value={text} onChange={e=>setText(e.target.value)} placeholder={captureExample(state.settings.profile)}/>
         </label>
         <CaptureHints text={text} today={today} onChange={setText}/>
         <VoiceInput reviewHint value={text} onChange={setText} disabled={working||busy} onRecording={setRecording}/>
@@ -111,11 +117,12 @@ export function DayCapture({state,busy,error,onClose,onSave,onRawSave,mode='day'
         </div>
         {study&&<p className="plan-study"><strong>{pick('Hoy solo 5','Just 5 today')}</strong> · {study}<br/><span>{pick('En Repaso puedes revisar tus fichas o crear nuevas con fuentes.','Review your cards or create new ones with sources in Review.')}</span></p>}
         <p className="field-help">{pick(`${dated.length} con día asignado y ${later.length} en Después. Las citas con hora conservarán sus avisos.`,`${dated.length} assigned a day and ${later.length} in Later. Appointments with a time keep their reminders.`)}</p>
-        <div className="review-final-actions"><button className="button primary full" disabled={busy||undecided||!chosen.length||unresolved} onClick={save}><Check size={19}/>{pick('Guardar las elegidas','Save chosen tasks')}</button><button className="button white full" disabled={busy} onClick={onClose}>{pick('Cancelar','Cancel')}</button></div>
+        <div className="review-final-actions"><button className="button primary full" disabled={busy||undecided||!chosen.length||unresolved} onClick={save}><Check size={19}/>{pick('Guardar las elegidas','Save chosen tasks')}</button><button className="button white full" disabled={busy} onClick={requestClose}>{pick('Cancelar','Cancel')}</button></div>
         {(busy||undecided||!chosen.length)&&<p className="field-help" role="status">{busy?pick('Guardando las tareas elegidas. Espera un momento.','Saving your chosen tasks. Please wait.'):undecided?pick('Elige Añadir o Descartar en cada propuesta para continuar.','Choose Add or Discard for each suggestion to continue.'):pick('No has elegido ninguna tarea. Puedes añadir alguna o cancelar.','No tasks are selected. Add one or cancel.')}</p>}
         {unresolved&&<p className="field-help">{overCapacity?pick('Para energía baja deja como máximo 3 tareas en Hoy, contando las que ya tienes. Puedes cambiar el día del resto.','For low energy, keep up to 3 tasks in Today including your existing tasks. You can change the day for the rest.'):pick('Revisa o corrige las propuestas que aún tienen una duda.','Review or edit suggestions that still have an unresolved question.')}</p>}
       </>}
       {(message||error)&&<p className="inline-error" role="alert">{message||error}</p>}
+    {exit&&<DraftExit storageError={persistence.storageError} onContinue={()=>setExit(false)} onSave={onClose} onDiscard={()=>{persistence.clear();onClose();}}/>}
     </div>
   </Modal>;
 }

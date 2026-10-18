@@ -12,7 +12,7 @@ export type Activity = {
   steps?: MicroStep[]; stepsDate?: string; priority?: 1 | 2 | 3 | 4; tag?: string;
 };
 export type FocusSession = { activityId: string; status: "running" | "paused"; startedAt: number | null; elapsed: number; note: string; duration: number };
-export type Profile = { audience: "adult" | "teen" | "child"; age: number | null; country: string; course: string; guardianConsent: boolean; aiConsent: boolean; completed: boolean; studying?: boolean; subjects?: string; studyLevel?: 'primary'|'secondary'|'university'|'other'; useCases?: ('work'|'home'|'personal'|'other')[] };
+export type Profile = { audience: "adult" | "teen" | "child"; age: number | null; country: string; course: string; guardianConsent: boolean; aiConsent: boolean; completed: boolean; studying?: boolean; subjects?: string; studyLevel?: 'primary'|'secondary'|'baccalaureate'|'university'|'other'; useCases?: ('work'|'home'|'personal'|'study'|'other')[] };
 export type ReminderPreferences = { departure: boolean; resume: boolean; study: boolean };
 export type Settings = { dayEnergy?: {date:string;value:Energy}; name: string; timezone: string; hideTimer: boolean; quietStart: string; quietEnd: string; demo: boolean; profile: Profile; reducedMotion?: boolean; highContrast?: boolean; fontSize?: 'small'|'medium'|'large'; language?: 'es'|'en'; calendarDismissed?:boolean; defaultTravelMinutes?:number; reminderPreferences?:ReminderPreferences; onboardingVersion?:number };
 export type GoogleStatus = { configured: boolean; connected: boolean; needsReconnect?: boolean; calendarId?: string; readCalendar?: string; lastSync?: number; email?: string };

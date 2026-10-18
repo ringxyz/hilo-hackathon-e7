@@ -1,8 +1,14 @@
-import {useRef} from 'react';
-import {pick,tr} from './i18n';
+import {useState} from 'react';
+import {pick,locale,tr} from './i18n';
+import {api} from './api';
+import {timeToInstant} from './domain';
+import type {Activity} from './types';
 export type Snooze='10m'|'1h'|'tomorrow';
-export function SnoozeButtons({busy,onAction}:{busy:boolean;onAction:(action:Snooze,requestId:string)=>Promise<boolean>}){
- const ids=useRef<Partial<Record<Snooze,string>>>({});
- const run=(action:Snooze)=>{ids.current[action]??=crypto.randomUUID();void onAction(action,ids.current[action]!).then(ok=>{if(ok)delete ids.current[action];});};
- return <div className="snooze-options" aria-label={pick('Posponer actividad','Reschedule activity')}><button type="button" className="button white" disabled={busy} onClick={()=>run('10m')}>{pick('Posponer 10 min','Snooze 10 min')}</button><button type="button" className="button white" disabled={busy} onClick={()=>run('1h')}>{pick('Posponer 1 h','Snooze 1 hour')}</button><button type="button" className="button white" disabled={busy} onClick={()=>run('tomorrow')}>{tr('Mañana')}</button></div>;
+type Preview={startsAt:string;date:string;time:string;zone:string;adjusted:boolean;departure:{date:string;time:string}|null};
+export function SnoozeButtons({busy,onAction,activity,day,zone}:{busy:boolean;activity:Activity;day:string;zone:string;onAction:(action:Snooze,requestId:string,expectedDue?:string)=>Promise<boolean>}){
+ const [preview,setPreview]=useState<(Preview&{action:Snooze;requestId:string})|null>(null),[working,setWorking]=useState(false),[error,setError]=useState('');
+ let future=false;try{future=activity.kind==='event'&&!!activity.time&&+timeToInstant(day,activity.time,activity.timezone||zone)>Date.now();}catch{}
+ async function prepare(action:Snooze){setWorking(true);setError('');try{const p=await api<Preview>('/api/reminder/preview',{activityId:activity.id,occurrence:day,action});setPreview({...p,action,requestId:crypto.randomUUID()});}catch(e){setError((e as Error).message);}finally{setWorking(false);}}
+ const label=(action:Snooze)=>action==='tomorrow'?pick('Mover a mañana','Move to tomorrow'):future?pick(`Retrasar ${action==='10m'?'10 min':'1 h'} desde la hora programada`,`Delay ${action==='10m'?'10 min':'1 hour'} from scheduled time`):pick(`Mover a dentro de ${action==='10m'?'10 min':'1 h'}`,`Move to ${action==='10m'?'10 min':'1 hour'} from now`);
+ return <div className="reschedule-control"><div className="snooze-options" aria-label={pick('Reprogramar actividad','Reschedule activity')}>{(['10m','1h','tomorrow'] as const).map(action=><button key={action} type="button" className="button white" disabled={busy||working} onClick={()=>prepare(action)}>{label(action)}</button>)}</div>{preview&&<section className="reschedule-preview" aria-label={pick('Confirma el nuevo horario','Confirm the new schedule')}><p><strong>{pick('Quedará: ','New schedule: ')}</strong>{new Date(preview.date+'T12:00:00Z').toLocaleDateString(locale(),{day:'numeric',month:'long',year:'numeric',timeZone:'UTC'})} · {preview.time}{preview.departure&&<> · {pick('Sal a las ','Leave at ')}{preview.departure.time}{preview.departure.date!==preview.date?' · '+preview.departure.date:''}</>}</p><p className="field-help">{preview.zone}{preview.adjusted?pick(' · Ajustado para respetar tu silencio.',' · Adjusted to respect quiet hours.'):''}</p><button type="button" className="button primary" disabled={busy||working} onClick={async()=>{setWorking(true);try{if(await onAction(preview.action,preview.requestId,preview.startsAt))setPreview(null);}finally{setWorking(false);}}}>{tr('Guardar cambios')}</button><button type="button" className="button white" disabled={busy||working} onClick={()=>setPreview(null)}>{tr('Cancelar')}</button></section>}{error&&<p className="inline-error" role="alert">{error}</p>}</div>;
 }

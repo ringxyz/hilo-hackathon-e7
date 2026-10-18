@@ -63,12 +63,16 @@ export async function handle(request:Request,env:Env):Promise<Response>{
   if(input.action==='start'){const a=await repo.activity(input.activityId||'');const current=await repo.session();if(current?.status==='running'&&current.activityId!==a.id)throw new ApiError('Pausa la actividad actual antes de cambiar.',409);if(isDone(a,localDate(new Date(),a.timezone||(await repo.settings()).timezone)))throw new ApiError('Elige una actividad pendiente.');}
   dbResult(await repo.db.rpc('hilo_focus',{action:input.action,activity_id:input.activityId||null,note:input.note}));return result();
  }
+ if(path==='/api/reminder/preview'){
+  const input=z.object({activityId:z.string().uuid(),occurrence:date,action:z.enum(['10m','1h','tomorrow'])}).parse(b);
+  return Response.json(dbResult(await repo.db.rpc('hilo_reschedule_preview',{activity_id:input.activityId,occurrence:input.occurrence,action:input.action})));
+ }
  if(path==='/api/reminder/action'){
-  const input=z.object({requestId:z.string().uuid(),activityId:z.string().uuid(),occurrence:date,kind:z.enum(['appointment','departure']),action:z.enum(['10m','1h','tomorrow','start','done'])}).parse(b);
+  const input=z.object({requestId:z.string().uuid(),activityId:z.string().uuid(),occurrence:date,kind:z.enum(['appointment','departure']),action:z.enum(['10m','1h','tomorrow','start','done']),expectedDue:z.string().datetime({offset:true}).optional()}).parse(b);
   const a=await repo.activity(input.activityId),target=a.rescheduledTo?.[input.occurrence],resolved=target?await repo.activity(target):a;
   const current=await repo.session();if(input.action==='start'&&current?.status==='running'&&current.activityId!==resolved.id)throw new ApiError('Pausa la actividad actual antes de cambiar.',409);
   const params={request_id:input.requestId,activity_id:input.activityId,occurrence:input.occurrence,kind:input.kind,action:input.action};
-  if(['10m','1h','tomorrow'].includes(input.action)){const rescheduled=dbResult(await repo.db.rpc('hilo_reschedule_reminder',params));return Response.json({...await repo.state(),rescheduled});}
+  if(['10m','1h','tomorrow'].includes(input.action)){if(!input.expectedDue)throw new ApiError('Revisa y confirma el nuevo horario antes de guardar.');const rescheduled=dbResult(await repo.db.rpc('hilo_reschedule_confirm',{...params,expected_due:input.expectedDue}));return Response.json({...await repo.state(),rescheduled});}
   dbResult(await repo.db.rpc('hilo_reminder_action',{...params,activity_id:resolved.id,occurrence:target?resolved.date:input.occurrence}));return result();
  }
  if(path==='/api/activity/reminder'){
