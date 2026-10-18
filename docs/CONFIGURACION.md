@@ -1,20 +1,20 @@
 # Configuración de Hilo v1.0
 
-**V1 — 19 de octubre de 2026**. Estado revisado el 15/10/2026. El registro de 0.2 se conserva abajo como antecedente.
+**V1 — 19 de octubre de 2026**. Estado revisado el 18–19/10/2026, Europe/Madrid. El registro de 0.2 se conserva abajo como antecedente.
 
-La arquitectura vigente usa React/Vite, Worker, Supabase Auth/PostgreSQL, Anthropic y Google Calendar. Aplicar en orden todas las migraciones de `supabase/migrations/`, incluidas las de foco/avisos, coherencia horaria, completado y `20261015141657_hilo_reschedule_activity.sql`. No ejecutar los scripts SQL de pruebas como migraciones: contienen transacciones que se revierten.
+La arquitectura vigente usa React/Vite, Worker, Supabase Auth/PostgreSQL, Anthropic y Google Calendar. Aplicar en orden todas las migraciones de `supabase/migrations/`, incluidas las posteriores al 15/10 para Inicio limpio, alta privada, energía/micro-pasos y revisión de propuestas. En entornos nuevos hay que configurar de forma privada la lista de correos y el hook de alta; véase INICIO-LIMPIO-V1.md. El acceso de la cuenta de evaluación ya existente sigue disponible por contraseña Hilo. No ejecutar los scripts SQL de pruebas como migraciones: contienen transacciones que se revierten.
 
-Calendar se conecta en Inicio o Ajustes, con el mismo componente. Lee el calendario elegido y escribe solo en el propio de Hilo; reprogramar una cita importada modifica únicamente la copia de Hilo. La autorización real de `waikarrss@gmail.com` fue completada por el participante; se añadió ese correo como sexto usuario de prueba en Google Auth Platform. OAuth continúa en Testing, con las restricciones de renovación de tokens del proveedor.
+Calendar se conecta en el onboarding opcional o en Ajustes. Inicio mantiene una sola acción principal y un punto de regreso compacto. Lee el calendario elegido y escribe solo en el propio de Hilo; reprogramar una cita importada modifica únicamente la copia de Hilo. La autorización real de `waikarrss@gmail.com` fue completada por el participante; se añadió ese correo como sexto usuario de prueba en Google Auth Platform. OAuth continúa en Testing, con las restricciones de renovación de tokens del proveedor.
 
 La cuenta de evaluación, su acceso y los tres eventos ficticios importados están documentados en `docs/DEMO-JURADO.md`. Credenciales únicamente en el Google Doc técnico existente, sin claves administrativas en Git.
 
 Captura offline: IndexedDB por propietario y clave estable de solicitud, con reintento al abrir la misma cuenta con conexión. El service worker solo conserva recursos públicos. Resto de operaciones con red. Actividades: zona IANA, instante UTC, desplazamiento y nota de retorno. Ajustes: reloj, movimiento reducido, contraste, letra e idioma.
 
-Posponer mueve actividad y recordatorio; las ocurrencias recurrentes se separan sin alterar las futuras. El silencio se calcula en la zona de la cuenta. `hilo-push` tiene autenticación propia y secretos en Vault; la aceptación de envío no prueba recepción física. No se han verificado micrófono ni avisos con pantalla bloqueada en Android/iPhone.
+Reprogramar muestra el destino y requiere confirmación. En citas futuras suma a la hora prevista; en las pasadas, al momento actual. Mueve actividad y recordatorio; las ocurrencias recurrentes se separan sin alterar las futuras. El silencio se calcula en la zona de la cuenta. `hilo-push` tiene autenticación propia y secretos en Vault; la aceptación de envío no prueba recepción física. No se han verificado micrófono ni avisos con pantalla bloqueada en Android/iPhone.
 
 Referencias vigentes: `docs/CIERRE-V1.md`, `docs/V1-VERIFICACION.md`, `docs/VERIFICACION.md` y `docs/ENTREGA-V1.md`. Node.js 22.13+, `npm ci`, `npm run typecheck`, `npm test`, `npm run build`; desarrollo en dos terminales con `npm run dev:api` y `npm run dev`.
 
-El montaje de entrega no requiere claves de Flow ni Higgsfield para ejecutar Hilo. La demo final usa capturas reales y voz de Google Flow (Algieba), montadas con Higgsedit. Los MP4, el guion y las capturas están enlazados en `docs/ENTREGA-V1.md`. No se incorporan voces, credenciales ni archivos privados al código servido. Las tres comprobaciones del repositorio terminaron con código 0 el 15/10/2026 a las 17:30:33 Europe/Madrid.
+El montaje de entrega no requiere claves de Flow ni Higgsfield para ejecutar Hilo. La demo final usa capturas reales y voz de Google Flow (Algieba), montadas con Higgsedit. Los MP4, el guion y las capturas están enlazados en `docs/ENTREGA-V1.md`. No se incorporan voces, credenciales ni archivos privados al código servido. Las tres comprobaciones del repositorio terminaron con código 0 el 18/10/2026 a las 23:52:01 Europe/Madrid (17 scripts de pruebas). El dictado vigente admite tres minutos y recupera segmentos; el límite de 90 segundos que figura en el archivo histórico no describe esta versión. Los borradores de captura se conservan por cuenta y modo; cerrar pide una decisión explícita.
 
 ## ARCHIVO — no usar para evaluación: configuración histórica 0.2
 

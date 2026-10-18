@@ -42,3 +42,8 @@ Las capturas y evidencias de QA quedan en outputs/, excluido de Git. Las credenc
 2. Instalar y probar en Android/iPhone físicos: recepción con pantalla bloqueada, dictado real y experiencia de teclado. La simulación de estados de permisos no acredita esos resultados.
 3. Probar renovación prolongada de OAuth y conflictos de Calendar. La generación de fichas con fuentes no garantiza exactitud académica exhaustiva.
 4. La entrega formal del hackatón sigue siendo una acción aparte. Este documento no acredita envío del formulario ni sustituye la revisión del material final tras publicar.
+
+
+## Revalidación de entrega · 18–19/10/2026
+
+El bloqueo del conector descrito en el registro del 16/10 es histórico. Sites devuelve ahora el proyecto activo y versión 26. Se observaron en la URL pública Inicio limpio, cuenta por contraseña, Calendar conectado en Ajustes, captura, Ahora, Solo esto, Agenda y Repaso. TypeScript, 17 scripts y build pasaron el 18/10 a las 23:52. Los límites físicos siguen documentados en VERIFICACION.md.

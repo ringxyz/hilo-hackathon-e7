@@ -1,8 +1,8 @@
 # Hilo v1.0 · A tu ritmo
 
-App para guardar pendientes, recuperar el siguiente paso y repasar lo aprendido. V1 para el piloto familiar y el hackatón. Revisión más reciente: [INICIO-LIMPIO-V1.md](docs/INICIO-LIMPIO-V1.md), con nuevo inicio, onboarding y acceso privado preparados en código; publicación pendiente. Cierre publicado anterior: [CIERRE-V1.md](docs/CIERRE-V1.md).
+App para guardar pendientes, recuperar el siguiente paso y repasar lo aprendido. V1 para el piloto familiar y el hackatón. Revisión más reciente: [INICIO-LIMPIO-V1.md](docs/INICIO-LIMPIO-V1.md), con Inicio limpio, onboarding y acceso privado observados en producción el 18–19/10/2026. Mejoras posteriores: [REVISION-1H.md](docs/REVISION-1H.md). Cierre histórico del 15/10: [CIERRE-V1.md](docs/CIERRE-V1.md).
 
-**V1 — 19 de octubre de 2026**. Verificación y cierre real: 15/10/2026. [App pública](https://hilo-tu-siguiente-paso.waikastudios.chatgpt.site/) · [Documentación técnica](https://docs.google.com/document/d/1YKbDPxQpC3I6OQw4LRvVIahstGaeHNXuuor28Eo0cW4/edit) · [Historial de prompts](https://docs.google.com/document/d/1ModC2RSVul3quD_H7kcXAqlkYZdT8S32DlngnLhiGsY/edit) · [Carpeta de entrega](https://drive.google.com/drive/folders/142ApUa4HOPODI5dgiiuWmM3lLzOXUjcw). Los dos MP4 finales de 120 s, la voz, el guion y seis capturas V1 están compartidos por enlace. [Índice, verificaciones y checklist de entrega](docs/ENTREGA-V1.md). El formulario oficial sigue pendiente de envío.
+**V1 — 19 de octubre de 2026**. Verificación del código y datos: 18/10/2026; cierre documental: 19/10/2026, Europe/Madrid. [App pública](https://hilo-tu-siguiente-paso.waikastudios.chatgpt.site/) · [Documentación técnica](https://docs.google.com/document/d/1YKbDPxQpC3I6OQw4LRvVIahstGaeHNXuuor28Eo0cW4/edit) · [Historial de prompts](https://docs.google.com/document/d/1ModC2RSVul3quD_H7kcXAqlkYZdT8S32DlngnLhiGsY/edit) · [Carpeta de entrega](https://drive.google.com/drive/folders/1H0QxCTqYYIdSRqHcF6seZy7BOIH5yyEs). Los dos MP4 finales de 120 s, la voz, el guion y capturas actuales de la app publicada están compartidos por enlace. [Índice, verificaciones y checklist de entrega](docs/ENTREGA-V1.md). El formulario oficial sigue pendiente de envío.
 
 ## Stack
 
@@ -15,7 +15,7 @@ React 19 + Vite 8 + TypeScript + Tailwind 4. API en Cloudflare Worker y PostgreS
 - Inicio: saludo pequeño, «Cuéntame tu día», explicación breve, Ver mi día, Ajustes y un punto de regreso compacto. Guardar idea queda disponible sin competir con la acción principal.
 - Cuéntamelo: escritura o dictado, propuesta compacta según el perfil, revisión antes de guardar y guardado directo en Después. Las actividades sin hora van a Después. La cola local reintenta con la misma clave y la misma cuenta.
 - Ahora y Solo esto: tarea activa, siguiente paso, temporizador opcional, pausa con nota y retorno. Después permite pasar una idea a Hoy en un toque.
-- Agenda: citas, desplazamiento, aviso independiente de salida, posponer actividad y aviso 10 minutos/1 hora/mañana, repeticiones y horario de silencio.
+- Agenda: citas, desplazamiento, aviso independiente de salida, reprogramar actividad y aviso 10 minutos/1 hora/mañana con revisión y confirmación, repeticiones y horario de silencio.
 - Repaso: relato de clase, confirmación de temas, búsqueda de fuentes, fichas por día y agrupación para examen. Respuestas editables y estado de práctica.
 - Ajustes: repetir configuración, perfil, consentimiento, zona horaria, desplazamiento por defecto, tipos de avisos y silencio, reloj, reducción de movimiento, contraste, tamaño de letra, Google Calendar, avisos por dispositivo, invitaciones, exportación y borrado de datos propios.
 

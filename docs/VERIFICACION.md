@@ -1,24 +1,23 @@
 # Hilo v1.0 · Verificación de entrega
 
-**V1 — 19 de octubre de 2026**. Ejecución real el **15/10/2026**, Europe/Madrid.
+Revisión del 18–19/10/2026, Europe/Madrid. Código funcional: `0f9b7c4d25a2a4d8d1523ea619e684ae2a2547bc`.
 
-| Comprobación | Resultado de esta revisión |
+| Comprobación | Evidencia actual |
 |---|---|
-| `npm run typecheck` | Correcto, código 0; cierre de la revisión 17:30:33 |
-| `npm test` | Correcto, código 0; siete scripts de dominio, perfil, Worker, piloto, V1, identidad offline y completado |
-| `npm run build` | Correcto, código 0; cierre de la revisión 17:30:33 |
-| Cuenta con Calendar | Acceso real con contraseña Hilo, propietario correcto, estado autenticado y aislamiento de las actividades; conexión Google autorizada por el participante |
-| Datos | 15 actividades, sesión pausada, 3 días, 16 fichas, 1 examen. Los tres eventos Google sustituyen equivalentes locales; cuenta histórica conservada |
-| Recorrido observado | Ahora, retomar fracciones, captura íntegra «Comprar regalo para Lucía», Solo esto, pausa con nota, persistencia tras recarga y Agenda con salida 19:00 para cita 19:30 |
-| Posponer | La prueba real de 10 min reprogramó actividad y aviso; ocurrencia de prueba revertida y serie restaurada. Comportamiento final documentado en CIERRE-V1 |
+| TypeScript | Código 0, 18/10 23:51:41–23:51:45 |
+| Pruebas | Código 0, 17 scripts, 18/10 23:51:45–23:51:59 |
+| Build | Código 0, 18/10 23:51:59–23:52:01 |
+| Demo | Acceso real por contraseña Hilo y aislamiento por propietario; 15 actividades, pausa, 3 días, 16 fichas y 1 examen |
+| Calendar | Lista real de calendarios y prueba en Ajustes: Conexión comprobada, agenda sincronizada; calendario ficticio seleccionado |
+| Producción | Inicio limpio, Ahora, Solo esto, pausa, captura sin IA, Después, Agenda y Repaso observados con la cuenta real de prueba |
+| Captura | Se guardó Comprar regalo para Lucía; apareció en Después sin cambiar tarea/tiempo. Después se retiró solo ese registro desechable |
+| Entrada | Se cerró sesión y se entró de nuevo desde el formulario de correo/contraseña. Inicio y nota de retorno conservados |
 
-Salidas completas y fecha en `outputs/hackathon/v1-final/{typecheck,test,build}.log` y `checks.json`, excluidas del código servido. Las transacciones SQL con rollback y las pruebas de interfaz con adaptador sintético están identificadas por separado en `docs/CIERRE-V1.md`; no se presentan como nuevas pruebas físicas.
+Los logs actuales están en `outputs/hackathon/revision-entrega-2026-10-18/`, excluidos de Git. Se conservan las pruebas históricas sin confundirlas con ejecuciones nuevas. Las transacciones reales con rollback y recorridos sintéticos de las mejoras recientes se describen en FOCUS-SUPPORT-QA.md, CAPTURE-REVIEW-QA.md, DICTATION-QA.md y REVISION-1H.md.
 
-Audiovisual cerrado el 15/10/2026: MP4 vertical 1080×1920 y horizontal 1920×1080, ambos de 120,000 s y 30 fps, con audio de 120 s y subtítulos españoles quemados. Decodificación completa sin errores; tamaño, duración y SHA-256 registrados. Revisión visual de apertura, flujo y cierre. Son montajes de capturas reales con recortes y acercamientos; no una grabación continua del consentimiento OAuth. Google Flow generó 13 tomas con voz Algieba (Omni 1.1 Flash), incluida la corrección de la toma 07. Higgsedit realizó el montaje/exportación. La música suave es original. Subtítulos alineados al audio: 63 segmentos, 240 palabras, similitud de transcripción 0,9647. No se atribuye la voz a Dylan.
+La interfaz vigente usa Calendar en Ajustes/onboarding, dictado de tres minutos, borradores recuperables, cierre con decisión explícita, confirmación al reprogramar y lotes de repaso. El Dashboard y el vídeo del 15/10 son versiones anteriores. Los materiales actuales y su verificación audiovisual se enumeran en ENTREGA-V1.md.
 
-Los dos vídeos, voz aparte, guion, SRT y seis capturas reales V1 están en la carpeta compartida. [Índice y hashes](ENTREGA-V1.md). La base de datos de muestra se volvió a comprobar a las 17:30:08; la idea temporal de Lucía usada en la grabación se retiró y la base quedó en 15 actividades con sesión pausada.
-
-Siguen pendientes micrófono físico, instalación/push con pantalla bloqueada en móviles, renovación OAuth prolongada y restricciones de cuentas supervisadas. Sin certificación WCAG ni afirmaciones clínicas. Google sigue en Testing. No se ha enviado el formulario oficial.
+Límites: micrófono de un móvil físico, instalación PWA y push con pantalla bloqueada, funcionamiento offline real del teléfono, renovación OAuth prolongada y restricciones Family Link/Workspace. Google sigue en Testing. Pruebas de componentes, eventos simulados y aceptación de un proveedor no acreditan recepción física ni eficacia clínica. No hay certificación WCAG ni revisión educativa humana exhaustiva. El formulario oficial no se ha enviado.
 
 ## ARCHIVO — no usar para evaluación: verificaciones anteriores
 

@@ -1,14 +1,10 @@
 # Hilo v1.0 · Piloto interno
 
-**V1 — 19 de octubre de 2026**. Revisión real: 15/10/2026. Se mantiene el alcance de piloto personal/familiar, con acompañamiento adulto para menores y consentimiento opcional para IA.
+Revisión 18–19/10/2026, Europe/Madrid. Inicio limpio, onboarding opcional, Calendar en Ajustes, captura de varios pendientes revisados, borradores recuperables, pausa con nota, Solo esto, salida/reprogramación con confirmación y Repaso por lotes. No se modifica el alcance de piloto personal con acompañamiento adulto para menores.
 
-La V1 incorpora entrada con un botón, Conóceme en Inicio, Calendar en el Dashboard, punto de regreso, captura directa sin IA, pausa con nota y Cancelar, Solo esto sin navegación, hora de salida, reprogramación de actividad/aviso y repaso inicial de cinco fichas. Ajustes conserva idioma, zona, silencio y exportación y añade movimiento reducido, contraste y tamaño de letra.
+Cuenta de evaluación y calendario ficticio: [DEMO-JURADO.md](DEMO-JURADO.md). Revalidada con 15 actividades, pausa, 3 días, 16 fichas y 1 examen. La contraseña Hilo permanece solo en el Doc técnico existente; el jurado no necesita la contraseña de Google.
 
-Cuenta principal del jurado y calendario ficticio real: `docs/DEMO-JURADO.md`. No compartir contraseñas de Google. La contraseña Hilo se mantiene exclusivamente en el Google Doc técnico existente. El perfil de muestra es adulto ficticio, sin información de familiares ni estudiantes reales.
-
-La cola offline conserva capturas por cuenta y evita duplicados; el resto necesita conexión. No se garantiza la recepción de avisos en todos los móviles. Validación técnica y límites actuales: `docs/VERIFICACION.md` y `docs/CIERRE-V1.md`.
-
-Cierre de materiales el 15/10/2026: [índice V1 y checklist](ENTREGA-V1.md). Hay dos vídeos funcionales de 2 minutos, seis capturas nuevas, guion y voz aparte. La demo real quedó restaurada y revalidada a las 17:30:08 (15 actividades, pausa, 3 días, 16 fichas, 1 examen). El vídeo de 15 segundos y los materiales de producción se conservan identificados como archivo, sin ofrecerse como entrega final. El envío formal del concurso sigue pendiente.
+[Entrega y checklist](ENTREGA-V1.md) · [Pruebas y límites](VERIFICACION.md) · [Revisión de recuperación](REVISION-1H.md). TypeScript, 17 scripts y build correctos. La captura offline está limitada a texto por cuenta; el resto requiere red. Micrófono y recepción física de avisos siguen sin validación en móviles. El formulario oficial sigue pendiente.
 
 ## ARCHIVO — no usar para evaluación: piloto 0.3
 

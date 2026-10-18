@@ -1,6 +1,6 @@
 # Hilo v1.0 · Cuenta de evaluación
 
-**V1 — 19 de octubre de 2026**. Verificación real: 15/10/2026, Europe/Madrid. La etiqueta de entrega no representa una ejecución futura.
+**V1 — 19 de octubre de 2026**. Verificación real: 18–19/10/2026, Europe/Madrid. La etiqueta de entrega no representa una ejecución futura.
 
 Aplicación: https://hilo-tu-siguiente-paso.waikastudios.chatgpt.site/
 
@@ -12,12 +12,12 @@ El participante completó personalmente OAuth. Google Calendar está conectado a
 
 ## Recorrido V1
 
-1. Inicio: Conóceme → Calendar → punto de regreso → Hoy → Después → Repaso.
+1. Inicio limpio: Cuéntame tu día, punto de regreso, Ver mi día y Ajustes. Calendar se consulta en Ajustes; no está en Inicio. El onboarding solo aparece en perfiles nuevos o al solicitar repetirlo.
 2. Retomar **Repasar fracciones**: siguiente paso, resolver el ejercicio 2, sumar 1/4 y 2/4.
 3. Guardar idea → escribir un pendiente ficticio → **Guardar tal cual en Después**. Guarda texto íntegro sin IA y conserva la tarea activa.
 4. **Pausar y dejar nota** → «Me quedé en el ejercicio 2» → guardar → recargar → retomar. Nota, paso y tiempo se conservan.
 5. **Solo esto**: tarea, paso y reloj opcional sin navegación. Pausa y captura siguen disponibles.
-6. Agenda → Paseo de la tarde: **Cita 19:30 · Sal a las 19:00**. Posponer 10 min / 1 h / Mañana mueve actividad y aviso. Una repetición se separa como ocurrencia puntual, sin mover las futuras. En citas de Google, el cambio es local de Hilo.
+6. Agenda → Paseo de la tarde: **Cita 19:30 · Sal a las 19:00**. Reprogramar 10 min / 1 h / Mañana muestra destino y exige confirmar; mueve actividad y aviso. Si la cita futura es a las 18:30, +10 min propone 18:40. Si ya pasó, parte del momento actual. Una repetición se separa como ocurrencia puntual, sin mover las futuras. En citas de Google, el cambio es local de Hilo.
 7. Después → revisar pendientes sin fecha. Repaso → **Hoy solo 5**, una ficha por pantalla, respuesta y fuentes; examen de práctica.
 8. Ajustes → idioma, reloj, movimiento reducido, contraste, tamaño de letra, zona y exportación. Los avisos se activan voluntariamente por dispositivo.
 
@@ -29,6 +29,6 @@ Captura offline en IndexedDB con reintento por cuenta e idempotencia. Las demás
 
 [Demo vertical, 1080×1920](https://drive.google.com/file/d/1qjF2b3XoMFwJZYLKwZ1XgkWfCGuOU8ze/view) · [Demo horizontal, 1920×1080](https://drive.google.com/file/d/1ezRCb8KnKYWm1uW5x66Rq8H8k0Wnhu7M/view). Ambos MP4 duran 120 s a 30 fps, con la misma voz, guion y subtítulos españoles incrustados. Montaje de capturas reales de la cuenta; el consentimiento OAuth no se grabó.
 
-El jurado puede repetir el recorrido con la cuenta compartida. La idea de Lucía que aparece en el vídeo se retiró después de capturarla; los 15 registros base, la nota y los 12 minutos restantes quedaron restaurados. Verificación final de datos: 15/10/2026 17:30:08 Europe/Madrid.
+El jurado puede repetir el recorrido con la cuenta compartida. La idea de Lucía que aparece en el vídeo se retiró después de capturarla; los 15 registros base, la nota y los 12 minutos restantes quedaron restaurados. Verificación de datos y Calendar: 18/10/2026, 23:52 Europe/Madrid; acceso por contraseña y captura sin IA repetidos el 18–19/10. La captura temporal fue retirada después y los 15 registros base se conservaron.
 
-[Índice de los dos Docs, vídeos, seis capturas y checklist](ENTREGA-V1.md). Credenciales únicamente en la sección 6 del Google Doc técnico existente.
+[Índice de los dos Docs, vídeos, capturas actuales y checklist](ENTREGA-V1.md). Credenciales únicamente en la sección 6 del Google Doc técnico existente.
