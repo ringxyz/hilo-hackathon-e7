@@ -28,3 +28,11 @@
 .enhanced-solo .solo-header{position:sticky;top:0;background:var(--bg,#f8f6fc);z-index:3;padding:8px 0 12px}
 .home-datetime{text-transform:none}
 .micro-steps progress::-webkit-progress-bar{background:var(--lavender);border-radius:4px}.micro-steps progress::-webkit-progress-value{background:var(--primary);border-radius:4px}.micro-steps progress::-moz-progress-bar{background:var(--primary);border-radius:4px}
+.capture-guide{font-size:.8125rem;line-height:1.6;color:var(--muted);margin:0 0 12px}
+.capture-actions,.review-final-actions{display:flex;flex-direction:column;gap:12px;margin-top:20px}
+.capture-actions .button{min-height:50px;padding:12px 16px;line-height:1.4;white-space:normal;text-align:center}
+.capture-meaning{margin-top:12px!important;line-height:1.6}.capture-review-notice{font-size:.9375rem;line-height:1.6;font-weight:750;margin-bottom:18px}
+.proposal-decisions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:16px}.proposal-decisions .button{min-height:46px;font-size:.875rem;padding:9px 14px}
+.proposal-decisions .button[aria-pressed="true"]{background:var(--primary);color:white;border-color:var(--primary)}
+.proposal-discarded .plan-item-header>strong{color:var(--muted);text-decoration:line-through}
+@media(max-width:480px){.capture-actions .button{font-size:.875rem}.capture-guide{font-size:.75rem}.day-capture textarea{min-height:130px}}
